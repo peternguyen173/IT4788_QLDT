@@ -28,10 +28,19 @@ const Login = ({ navigation }) => {
       if (response.status === 200) {
         const userData = response.data;
 
+        const user = {
+          id: userData.id,
+          ho: userData.ho,
+          ten: userData.ten,
+          username: userData.username,
+          token: userData.token,
+          active: userData.active,
+          role: userData.role,
+        };
         // Store the token in AsyncStorage
         await AsyncStorage.setItem('token', userData?.token);
         Alert.alert('Đăng nhập thành công!', `Xin chào, ${userData?.ten}`);
-        login(userData);
+        login(user);
         // Navigate based on the user's role
         if (userData.role === 'STUDENT') {
           navigation.navigate('StudentHome');
