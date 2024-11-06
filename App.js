@@ -7,7 +7,12 @@ import StudentHome from './src/screens/student/StudentHome';
 import TeacherHome from './src/screens/teacher/TeacherHome';
 import MainLayout from './src/components/MainLayout'; // Import the MainLayout
 import StudentProfile from './src/screens/student/StudentProfile';
+import StudentClassList from './src/screens/student/StudentClassList';
+import StudentClassInfo from './src/screens/student/StudentClassInfo';
 import TeacherProfile from './src/screens/teacher/TeacherProfile';
+import TeacherClassList from './src/screens/teacher/TeacherClassList'
+import TeacherClassInfo from './src/screens/teacher/TeacherClassInfo'
+import TeacherCheckingAttendance from './src/screens/teacher/TeacherCheckingAttendance'
 
 
 const Stack = createNativeStackNavigator();
@@ -27,6 +32,12 @@ function AppNavigator() {
           <Stack.Screen name="StudentProfile">
               {props => <MainLayout title="Profile" navigation={props.navigation}><StudentProfile {...props} /></MainLayout>}
           </Stack.Screen>
+          <Stack.Screen name="StudentClassList">
+              {props => <MainLayout title="Profile" navigation={props.navigation}><StudentClassList {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="StudentClassInfo">
+              {props => <MainLayout title="Profile" navigation={props.navigation}><StudentClassInfo {...props} /></MainLayout>}
+          </Stack.Screen>
           </>
         ) : (
           <>
@@ -35,6 +46,15 @@ function AppNavigator() {
           </Stack.Screen>
           <Stack.Screen name="TeacherProfile">
               {props => <MainLayout title="Profile" navigation={props.navigation}><TeacherProfile {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="TeacherClassList">
+              {props => <MainLayout title="Profile" navigation={props.navigation}><TeacherClassList {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="TeacherClassInfo">
+              {props => <MainLayout title="Profile" navigation={props.navigation}><TeacherClassInfo {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="TeacherCheckingAttendance">
+              {props => <MainLayout title="Profile" navigation={props.navigation}><TeacherCheckingAttendance {...props} /></MainLayout>}
           </Stack.Screen>
           </>
         )
