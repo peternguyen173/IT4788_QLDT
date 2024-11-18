@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.3",
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/checkbox": "^0.5.17",
     "@react-native-firebase/app": "^21.3.0",
     "@react-native-firebase/auth": "^21.3.0",
     "@react-native-picker/picker": "^2.9.0",
@@ -22,6 +23,7 @@
     "expo-font": "~12.0.10",
     "expo-splash-screen": "~0.27.6",
     "expo-status-bar": "~1.12.1",
+    "moment": "^2.30.1",
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-paper": "^5.12.5",

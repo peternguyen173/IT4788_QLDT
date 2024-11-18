@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useAuth } from '../../navigators/AuthProvider';
 import Icon from 'react-native-vector-icons/Ionicons'; // Import icon library
+import { useNavigation } from '@react-navigation/native';
 
 const StudentHome = () => {
   const { userData } = useAuth();
+  const navigation = useNavigation();
 
   const menuItems = [
-    { title: 'Danh sách lớp học', subtitle: 'Danh sách lớp học theo học kỳ', icon: 'book-outline', route: 'ClassList' },
+    { title: 'Danh sách lớp học', subtitle: 'Danh sách lớp học theo học kỳ', icon: 'book-outline', route: 'StudentClassList' },
     { title: 'Đăng ký lớp học', subtitle: 'Tham gia các lớp học mới', icon: 'person-add-outline', route: 'RegisterClass' },
     { title: 'Bài tập', subtitle: 'Nộp và theo dõi bài tập', icon: 'clipboard-outline', route: 'Assignments' },
     { title: 'Điểm danh', subtitle: 'Theo dõi điểm danh các buổi học', icon: 'checkmark-done-outline', route: 'Attendance' },
@@ -28,7 +30,7 @@ const StudentHome = () => {
               key={index} 
               style={styles.menuItem}
               // Mọi người sửa route ở bảng menuItems rồi bỏ comment câu dưới để navigate
-             // onPress={() => navigation.navigate(item.route)}
+              onPress={() => navigation.navigate(item.route)}
 
             >
               <Icon name={item.icon} size={40} color="#000" style={styles.icon} />
