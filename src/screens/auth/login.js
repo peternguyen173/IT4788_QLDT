@@ -26,7 +26,7 @@ const Login = ({ navigation }) => {
       });
 
       if (response.status === 200) {
-        const userData = response.data;
+        const userData = response.data.data;
 
         const user = {
           id: userData.id,

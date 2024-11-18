@@ -8,6 +8,8 @@ import TeacherHome from './src/screens/teacher/TeacherHome';
 import MainLayout from './src/components/MainLayout'; // Import the MainLayout
 import StudentProfile from './src/screens/student/StudentProfile';
 import TeacherProfile from './src/screens/teacher/TeacherProfile';
+import Notifications from './src/screens/student/ListNotifications';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -26,6 +28,9 @@ function AppNavigator() {
           </Stack.Screen>
           <Stack.Screen name="StudentProfile">
               {props => <MainLayout title="Profile" navigation={props.navigation}><StudentProfile {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="Notifications">
+            {props => <MainLayout title="Danh sách thông báo" navigation={props.navigation}><Notifications {...props} /></MainLayout>}
           </Stack.Screen>
           </>
         ) : (

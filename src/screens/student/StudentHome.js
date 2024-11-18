@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useAuth } from '../../navigators/AuthProvider';
 import Icon from 'react-native-vector-icons/Ionicons'; // Import icon library
 
-const StudentHome = () => {
+const StudentHome = ({navigation}) => {
   const { userData } = useAuth();
+
 
   const menuItems = [
     { title: 'Danh sách lớp học', subtitle: 'Danh sách lớp học theo học kỳ', icon: 'book-outline', route: 'ClassList' },
@@ -28,7 +29,7 @@ const StudentHome = () => {
               key={index} 
               style={styles.menuItem}
               // Mọi người sửa route ở bảng menuItems rồi bỏ comment câu dưới để navigate
-             // onPress={() => navigation.navigate(item.route)}
+              onPress={() => navigation.navigate(item.route)}
 
             >
               <Icon name={item.icon} size={40} color="#000" style={styles.icon} />
