@@ -18,7 +18,7 @@ const StudentHome = () => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.name}>{userData.ho + " " + userData?.ten || 'No name'}</Text>
+          <Text style={styles.name}>{userData?.ho + " " + userData?.ten || 'No name'}</Text>
           <Text style={styles.info}>Mã sinh viên: {userData?.id || 'N/A'}</Text>
         </View>
         

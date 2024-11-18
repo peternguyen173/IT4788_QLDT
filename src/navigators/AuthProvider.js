@@ -1,29 +1,71 @@
-// AuthContext.js
-import React, { createContext, useState, useContext } from 'react';
+// src/navigators/AuthProvider.js
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
-const AuthContext = createContext({});
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (data) => {
+  const login = async (data) => {
     setIsLoggedIn(true);
-    setUserData(data); // Giả sử data chứa thông tin người dùng, bao gồm cả vai trò
+    setUserData(data);
+    await AsyncStorage.setItem('token', data.token);
   };
 
-  const logout = () => {
+  const logout = async () => {
     setIsLoggedIn(false);
     setUserData(null);
+    await AsyncStorage.removeItem('token');
   };
 
+  useEffect(() => {
+    const loadUserData = async () => {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('token');
+
+      if (token) {
+        try {
+          const response = await axios.post('http://160.30.168.228:8080/it4788/get_user_info', {
+            token,
+            user_id: '',
+          });
+
+          if (response.data.code === 1000) {
+            const user = response.data.data;
+            setUserData({
+              id: user.id,
+              ho: user.ho,
+              ten: user.ten,
+              email: user.email,
+              role: user.role,
+              token,
+            });
+            setIsLoggedIn(true);
+          } else {
+            await AsyncStorage.removeItem('token'); // Xóa token nếu không hợp lệ
+            setIsLoggedIn(false);
+          }
+        } catch (error) {
+          console.error('Error loading user data:', error);
+          await AsyncStorage.removeItem('token'); // Xóa token nếu xảy ra lỗi
+        }
+      }
+
+      setLoading(false);
+    };
+
+    loadUserData();
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userData, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, userData, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

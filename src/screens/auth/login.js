@@ -4,16 +4,12 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../navigators/AuthProvider';
 
-
-
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-
-  
   const handleLogin = async () => {
     const deviceId = 1; // Assume deviceId is 1
     setLoading(true);
@@ -49,7 +45,6 @@ const Login = ({ navigation }) => {
         }
       }
     } catch (error) {
-      // Handle login errors
       Alert.alert('Đăng nhập thất bại', 'Vui lòng kiểm tra lại email và mật khẩu.');
       console.error(error);
     } finally {
@@ -78,47 +73,80 @@ const Login = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Đăng nhập</Text>
       </TouchableOpacity>
+
+      {/* Link Quên mật khẩu */}
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+        <Text style={styles.forgotPassword}>Quên mật khẩu?</Text>
+      </TouchableOpacity>
+
+      {/* Chưa có tài khoản? Đăng ký */}
+      <View style={styles.footer}>
+        <Text style={styles.registerText}>Chưa có tài khoản? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.registerLink}>Đăng ký</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      padding: 20,
-      backgroundColor: '#990000', // Màu nền đỏ đậm
-    },
-    title: {
-      fontSize: 28,
-      fontWeight: 'bold',
-      marginBottom: 30,
-      textAlign: 'center',
-      color: '#fff', // Đổi màu chữ tiêu đề thành trắng để dễ đọc
-    },
-    input: {
-      height: 50,
-      borderColor: '#fff', // Đổi đường viền thành màu trắng cho nổi bật
-      borderWidth: 2,
-      marginBottom: 20,
-      paddingHorizontal: 10, // Giảm chiều ngang của ô nhập liệu
-      borderRadius: 5,
-      backgroundColor: '#fff', // Nền input màu trắng
-    },
-    button: {
-      backgroundColor: '#c00000', // Nền nút màu đỏ
-      paddingVertical: 10,
-      paddingHorizontal: 15, // Giảm chiều ngang của nút
-      borderRadius: 25,
-      alignItems: 'center',
-      alignSelf: 'center', // Căn giữa nút
-    },
-    buttonText: {
-      color: '#fff', // Màu chữ nút
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-  });
-  
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#990000',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
+    color: '#fff',
+  },
+  input: {
+    height: 50,
+    borderColor: '#fff',
+    borderWidth: 2,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+  },
+  button: {
+    backgroundColor: '#c00000',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  forgotPassword: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 15,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 30,
+    alignSelf: 'center',
+    flexDirection: 'row',
+  },
+  registerText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  registerLink: {
+    color: '#fff',
+    fontSize: 16,
+    textDecorationLine: 'underline',
+  },
+});
 
 export default Login;
