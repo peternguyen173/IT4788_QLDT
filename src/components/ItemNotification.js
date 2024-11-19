@@ -1,8 +1,14 @@
-import { Text, View,  StyleSheet } from "react-native"
-
+import { Text, View,  StyleSheet, TouchableOpacity } from "react-native"
+import { useNavigation } from '@react-navigation/native';
 
 const ItemNotification = ({date, className, mainContent}) => { 
     console.log(date, className, mainContent)
+    const navigation = useNavigation();
+
+    const handlePressDetail = () => {
+        navigation.navigate('StudentHome');
+    }
+
     return (
         <View style={styles.container}>
             
@@ -21,7 +27,9 @@ const ItemNotification = ({date, className, mainContent}) => {
                 <Text>{mainContent}</Text>
             </View>
             <View style={styles.linkContent}>
-                <Text>Chi tiết</Text>
+                <TouchableOpacity onPress={handlePressDetail}>
+                    <Text style={{textDecorationLine: 'underline',}}>Chi tiết</Text>
+                </TouchableOpacity>
             </View>
         </View>
     )
@@ -48,6 +56,13 @@ const styles = StyleSheet.create({
        marginTop: 10,
        paddingVertical: 10,
     },
+    footContent: {
+        paddingVertical: 10,
+    },
+    linkContent: {
+        
+        alignItems: 'flex-end',
+    }
 })
 
 

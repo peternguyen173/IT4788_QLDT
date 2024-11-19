@@ -9,7 +9,7 @@ import MainLayout from './src/components/MainLayout'; // Import the MainLayout
 import StudentProfile from './src/screens/student/StudentProfile';
 import TeacherProfile from './src/screens/teacher/TeacherProfile';
 import Notifications from './src/screens/student/ListNotifications';
-
+import RequestAbsence from './src/screens/student/RequestAbsence';
 
 
 const Stack = createNativeStackNavigator();
@@ -31,6 +31,9 @@ function AppNavigator() {
           </Stack.Screen>
           <Stack.Screen name="Notifications">
             {props => <MainLayout title="Danh sách thông báo" navigation={props.navigation}><Notifications {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="RequestAbsence">
+            {props => <MainLayout title="Xin nghỉ học" navigation={props.navigation}><RequestAbsence {...props} /></MainLayout>}
           </Stack.Screen>
           </>
         ) : (

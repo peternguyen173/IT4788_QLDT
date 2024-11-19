@@ -15,6 +15,18 @@ const dataNotifi = [
         date: '2021-10-10',
         className: 'Lập trình di động',
         mainContent: 'Bài tập'
+    },
+    {   
+        id: 3,
+        date: '2021-10-10',
+        className: 'Lập trình di động',
+        mainContent: 'Bài tập'
+    },
+    {   
+        id: 4,
+        date: '2021-10-10',
+        className: 'Lập trình di động',
+        mainContent: 'Bài tập'
     }
 ]
 
