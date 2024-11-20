@@ -5,12 +5,12 @@ import Header from './Header'; // Adjust the path as necessary
 import Footer from './Footer'; // Import the CustomFooter
 import { useAuth } from '../navigators/AuthProvider'; 
 
-const MainLayout = ({ title, children, navigation }) => {
+const MainLayout = ({ title, children, navigation, onBack }) => {
   const { userData } = useAuth(); // Get user data from AuthProvider
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header title={title} />
+      <Header title={title} onBack={onBack}/>
       <View style={styles.content}>
         {children}
       </View>
