@@ -22,6 +22,7 @@
     "expo-font": "~12.0.10",
     "expo-splash-screen": "~0.27.6",
     "expo-status-bar": "~1.12.1",
+    "qldt": "file:",
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-paper": "^5.12.5",
