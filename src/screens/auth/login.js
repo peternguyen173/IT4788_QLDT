@@ -15,14 +15,16 @@ const Login = ({ navigation }) => {
 
   
   const handleLogin = async () => {
-    const deviceId = 1; // Assume deviceId is 1
+    const device_id = 1; // Assume deviceId is 1
+    const fcm_token = null; // Assume fcmToken is null
     setLoading(true);
 
     try {
-      const response = await axios.post('http://160.30.168.228:8080/it4788/login', {
+      const response = await axios.post('http://157.66.24.126:8080/it4788/login', {
         email,
         password,
-        deviceId,
+        device_id,
+        fcm_token
       });
 
       if (response.status === 200) {

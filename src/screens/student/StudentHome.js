@@ -14,6 +14,7 @@ const StudentHome = ({navigation}) => {
     { title: 'Điểm danh', subtitle: 'Theo dõi điểm danh các buổi học', icon: 'checkmark-done-outline', route: 'Attendance' },
     { title: 'Xin nghỉ học', subtitle: 'Gửi yêu cầu xin nghỉ học', icon: 'calendar-clear-outline', route: 'RequestAbsence' },
     { title: 'Thông báo', subtitle: 'Cập nhật tin tức và thông báo', icon: 'notifications-outline', route: 'Notifications' },
+    { title: 'Profile', subtitle: 'Thông tin cá nhân', icon: 'person-circle-outline', route: 'SubmitExam' },
   ];
   return (
     <View style={styles.container}>

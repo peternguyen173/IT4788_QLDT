@@ -10,6 +10,8 @@ import StudentProfile from './src/screens/student/StudentProfile';
 import TeacherProfile from './src/screens/teacher/TeacherProfile';
 import Notifications from './src/screens/student/ListNotifications';
 import RequestAbsence from './src/screens/student/RequestAbsence';
+import SubmitExam from './src/screens/student/SubmitExam';
+import DetailNotification from './src/components/DetaiINotification';
 
 
 const Stack = createNativeStackNavigator();
@@ -32,8 +34,14 @@ function AppNavigator() {
           <Stack.Screen name="Notifications">
             {props => <MainLayout title="Danh sách thông báo" navigation={props.navigation}><Notifications {...props} /></MainLayout>}
           </Stack.Screen>
+          <Stack.Screen name="DetailNotification">
+            {props => <MainLayout title="Chi tiet thong bao" navigation={props.navigation}><DetailNotification {...props} /></MainLayout>}
+          </Stack.Screen>
           <Stack.Screen name="RequestAbsence">
             {props => <MainLayout title="Xin nghỉ học" navigation={props.navigation}><RequestAbsence {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="SubmitExam">
+            {props => <MainLayout title="Nop bai tap" navigation={props.navigation}><SubmitExam {...props} /></MainLayout>}
           </Stack.Screen>
           </>
         ) : (

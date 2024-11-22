@@ -20,6 +20,7 @@ const RequestAbsence = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { userData } = useAuth();
   console.log('User data:', userData);
+  
   const handleFileSelect = async (setFieldValue) => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -50,8 +51,8 @@ const RequestAbsence = () => {
   const handleSubmitForm = async (values) => {
     const formData = new FormData();
     formData.append('token', userData.token);
-    formData.append('classId', '000102');
-    formData.append('date', '2024-11-11');
+    formData.append('classId', '000111');
+    formData.append('date', formatDate(values.date));
     formData.append('reason', values.title);
 
     // Checking if a file was selected
@@ -67,7 +68,7 @@ const RequestAbsence = () => {
     console.log('Form data:', formData);
 
     try {
-      const response = await axios.post('http://160.30.168.228:8080/it5023e/request_absence', formData, {
+      const response = await axios.post('http://157.66.24.126:8080/it5023e/request_absence', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',  // Automatically handled by axios
         },
@@ -88,6 +89,12 @@ const RequestAbsence = () => {
     }
 
   }
+
+  const formatDate = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
   return (
     <Formik
       initialValues={{ title: '', reason: '', date: null, file: null }}
@@ -95,15 +102,21 @@ const RequestAbsence = () => {
       onSubmit={handleSubmitForm}
     >
       {({ handleChange, handleBlur, handleSubmit, setFieldValue, values, errors, touched }) => (
+
         <View style={{ padding: 20 }}>
+          <Text style={{ marginBottom: 10 }}>Bạn cần điền đơn này đơn xin phép nghỉ học lớp học này </Text>
           {/* Title Field */}
           <Text>Title</Text>
           <TextInput
             placeholder="Enter the title"
             onChangeText={handleChange('title')}
+            // aria-disabled
             onBlur={handleBlur('title')}
-            value={values.title}
-            style={{ borderWidth: 1, marginBottom: 10, padding: 8 }}
+            value= "Xin nghỉ học"
+            style={{
+              marginBottom: 10, padding: 8, borderColor: 'gray',
+              borderRadius: 10, marginTop: 10, borderWidth: 1
+            }}
           />
           {touched.title && errors.title && <Text style={{ color: 'red' }}>{errors.title}</Text>}
 
@@ -115,14 +128,18 @@ const RequestAbsence = () => {
             onBlur={handleBlur('reason')}
             value={values.reason}
             multiline
-            style={{ borderWidth: 1, marginBottom: 10, padding: 8, height: 100 }}
+            style={{
+              borderWidth: 1, marginBottom: 10, marginTop: 10,
+              padding: 8, height: 100, borderColor: 'gray', borderRadius: 10
+
+            }}
           />
           {touched.reason && errors.reason && <Text style={{ color: 'red' }}>{errors.reason}</Text>}
 
           {/* Date Field */}
-          <Text>Date of Request</Text>
-          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}>
-            <Text>{values.date ? values.date.toDateString() : 'Select date'}</Text>
+          <Text>Ngày Nghỉ</Text>
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ borderWidth: 1, padding: 8, marginBottom: 10, borderColor: 'grey', borderRadius: 10, marginTop: 10 }}>
+            <Text>{values.date ? formatDate(values.date): 'Select date'}</Text>
           </TouchableOpacity>
           {touched.date && errors.date && <Text style={{ color: 'red' }}>{errors.date}</Text>}
 
@@ -131,18 +148,30 @@ const RequestAbsence = () => {
               value={date}
               mode="date"
               display="default"
-              onChange={(event, selectedDate) => handleDateChange(event, selectedDate, setFieldValue)}
+              onChange={(event, selectedDate) => 
+                handleDateChange(event, selectedDate, setFieldValue)}
             />
           )}
 
           {/* File Picker */}
-          <Text>Proof File</Text>
-          <Button title="Select File" onPress={() => handleFileSelect(setFieldValue)} />
+          <Text style={{marginTop:10}}>Ảnh minh chứng</Text>
+          <View style={{  borderRadius: 20 }}>
+            <TouchableOpacity title="Select File"
+              onPress={() => handleFileSelect(setFieldValue)} color={'red'} style={{ borderRadius: 10,backgroundColor: 'red', padding: 10, alignItems: 'center', marginTop: 10  }}>
+              <Text style={{ color: 'white', fontSize: 16 }} >Chon anh minh chung</Text>
+            </TouchableOpacity>
+          </View>
           {selectedFile && <Text style={{ marginTop: 5 }}>Selected File: {selectedFile.name || selectedFile.uri}</Text>}
           {touched.file && errors.file && <Text style={{ color: 'red' }}>{errors.file}</Text>}
 
-          {/* Submit Button */}
-          <Button title="Submit" onPress={handleSubmit} />
+
+          
+
+          <TouchableOpacity title="Submit"
+            style={{ backgroundColor: 'red', padding: 10, alignItems: 'center', borderRadius: 10, marginTop: 20 }}
+            onPress={handleSubmit}>
+            <Text style={{ color: 'white', fontSize: 16 }}>Submit</Text>
+          </TouchableOpacity>
         </View>
       )}
     </Formik>
