@@ -22,6 +22,7 @@ import ClassDetail from "./src/screens/student/ClassDetail";
 import CreateClass from "./src/screens/teacher/CreateClass";
 import Assignments from "./src/screens/teacher/Assignments";
 import EditClass from "./src/screens/teacher/EditClass";
+import ErrorScreen from "./src/screens/ErrorScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -129,6 +130,7 @@ function AppNavigator() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Verify" component={VerifyScreen} />
+          <Stack.Screen name="ErrorScreen" component={ErrorScreen} />
 
         </>
       )}
