@@ -32,7 +32,7 @@ const TeacherCheckingAttendance = ({ route }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://160.30.168.228:8080/it5023e/get_class_info',
+        'http://157.66.24.126:8080/it5023e/get_class_info',
         {
           class_id: classId,
           token: userData.token,
@@ -77,7 +77,7 @@ const TeacherCheckingAttendance = ({ route }) => {
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
-        'http://160.30.168.228:8080/it5023e/take_attendance',
+        'http://157.66.24.126:8080/it5023e/take_attendance',
         {
           token: userData.token,
           class_id: classId,

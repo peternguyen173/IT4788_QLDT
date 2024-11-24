@@ -12,7 +12,7 @@ const TeacherHome = () => {
     { title: 'Danh sách lớp học', subtitle: 'Xem danh sách các lớp học theo học kỳ', icon: 'book-outline', route: 'TeacherClassList' },
     { title: 'Tạo lớp học', subtitle: 'Tạo lớp học mới theo học kỳ', icon: 'person-add-outline', route: 'CreateClass' },
     { title: 'Bài tập', subtitle: 'Tạo bài tập, theo dõi và chấm điểm', icon: 'clipboard-outline', route: 'Assignments' },
-    { title: 'Điểm danh', subtitle: 'Điểm danh sinh viên trong các buổi học', icon: 'checkmark-done-outline', route: 'TeacherCheckingAttendance' },
+    { title: 'dsdsdsd', subtitle: 'dsdsd', icon: 'checkmark-done-outline', route: 'TeacherHome' },
     { title: 'Xin nghỉ học', subtitle: 'Quản lý yêu cầu nghỉ học của sinh viên', icon: 'calendar-clear-outline', route: 'ManageLeaveRequests' },
     { title: 'Thông báo', subtitle: 'Cập nhật tin tức và thông báo', icon: 'notifications-outline', route: 'Notifications' },
   ];

@@ -26,11 +26,15 @@ const StudentClassList = ({ navigation }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://160.30.168.228:8080/it5023e/get_class_list',
+        'http://157.66.24.126:8080/it5023e/get_class_list',
         {
           token: userData.token,
-          role: userData.role,
-          account_id: userData.id,
+          role: 'STUDENT',
+          account_id: userData.id, // ID tài khoản từ AuthProvider
+          pageable_request: {
+            page: 0, // Trang đầu tiên
+            page_size: 10, // Số lượng lớp mỗi trang
+          }
         },
         {
           headers: {
@@ -38,7 +42,7 @@ const StudentClassList = ({ navigation }) => {
           },
         }
       );
-      setClasses(response.data.data);
+      setClasses(response.data.data.page_content);
     } catch (error) {
       console.error(error);
       if (error.response && error.response.status === 401) {
@@ -69,8 +73,8 @@ const StudentClassList = ({ navigation }) => {
         onPress={() => navigation.navigate('StudentClassInfo', { classId: item.class_id })}
       >
         <View style={styles.cardHeader}>
-          <Text style={[styles.className, { color: isActive ? '#d32f2f' : '#721c24' }]}>{item.class_name}</Text>
-          <Text style={[styles.classType, { color: isActive ? '#666' : '#721c24' }]}>Loại: {item.class_type}</Text>
+          <Text style={[styles.className, { color: isActive ? '#d32f2f' : '#721c24' }]}>{item.class_id} - {item.class_name}</Text>
+          {/*<Text style={[styles.classType, { color: isActive ? '#666' : '#721c24' }]}>Loại: {item.class_type}</Text>*/}
         </View>
   
         <View style={styles.cardContent}>
@@ -81,7 +85,15 @@ const StudentClassList = ({ navigation }) => {
               {formattedStartDate} - {formattedEndDate}
             </Text>
           </View>
-  
+
+          {/* Status */}
+          <View style={styles.infoRow}>
+            <Icon name="receipt-outline" size={20} color={isActive ? '#666' : '#721c24'} />
+            <Text style={[styles.infoText, { color: isActive ? '#666' : '#721c24' }]}>
+              Giảng viên: {item.lecturer_name}
+            </Text>
+          </View>
+
           {/* Student Count */}
           <View style={styles.infoRow}>
             <Icon name="people-outline" size={20} color={isActive ? '#666' : '#721c24'} />
@@ -90,13 +102,7 @@ const StudentClassList = ({ navigation }) => {
             </Text>
           </View>
   
-          {/* Status */}
-          <View style={styles.infoRow}>
-            <Icon name="receipt-outline" size={20} color={isActive ? '#666' : '#721c24'} />
-            <Text style={[styles.infoText, { color: isActive ? '#666' : '#721c24' }]}>
-              Trạng thái: {item.status}
-            </Text>
-          </View>
+
         </View>
       </TouchableOpacity>
     );

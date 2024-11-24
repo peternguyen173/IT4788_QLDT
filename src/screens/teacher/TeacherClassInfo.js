@@ -27,7 +27,7 @@ const TeacherClassInfo = ({ route }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://160.30.168.228:8080/it5023e/get_class_info',
+        'http://157.66.24.126:8080/it5023e/get_class_info',
         {
           class_id: classId,
           token: userData.token,
@@ -111,9 +111,24 @@ const TeacherClassInfo = ({ route }) => {
 
         <TouchableOpacity 
           style={styles.button}
-        //   onPress={() => chuyển sang màn hình bài tập ở đây
+          onPress={() => navigation.navigate('Assignment', { classId })}
         >
           <Text style={styles.buttonText}>Bài tập</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('TeacherCheckingAttendance', { classId })}
+        >
+          <Text style={styles.buttonText}>Thêm sinh viên</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('EditClass', { classId })}
+        >
+          <Text style={styles.buttonText}>Chỉnh sửa</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         try {
-          const response = await axios.post('http://160.30.168.228:8080/it4788/get_user_info', {
+          const response = await axios.post('http://157.66.24.126:8080/it4788/get_user_info', {
             token,
             user_id: '',
           });

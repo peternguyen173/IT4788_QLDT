@@ -27,7 +27,7 @@ const StudentClassInfo = ({ route }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://160.30.168.228:8080/it5023e/get_class_info',
+        'http://157.66.24.126:8080/it5023e/get_class_info',
         {
           class_id: classId,
           token: userData.token,
@@ -85,6 +85,7 @@ const StudentClassInfo = ({ route }) => {
       <Text style={styles.header}>Thông tin lớp học</Text>
 
       <View style={styles.infoContainer}>
+        <Text><Text style={styles.label}>Mã lớp: </Text>{classInfo.class_id}</Text>
         <Text><Text style={styles.label}>Tên lớp: </Text>{classInfo.class_name}</Text>
         <Text><Text style={styles.label}>Loại lớp: </Text>{classInfo.class_type}</Text>
         <Text><Text style={styles.label}>Giảng viên: </Text>{classInfo.lecturer_name}</Text>
