@@ -12,8 +12,9 @@ import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 const EditClass = ({ route }) => {
+    const { classId } = route.params; // Nhận classId từ route params
+
     const { userData } = useAuth();
-    const [classId, setClassId] = useState("");
     const [className, setClassName] = useState("");
     const [classType, setClassType] = useState("LT");
     const [startDate, setStartDate] = useState(new Date());
@@ -28,7 +29,6 @@ const EditClass = ({ route }) => {
 
     useEffect(() => {
         if (classData) {
-            setClassId(classData.class_id || "");
             setClassName(classData.class_name || "");
             setClassType(classData.class_type || "LT");
             setStartDate(new Date(classData.start_date) || new Date());
@@ -88,7 +88,6 @@ const EditClass = ({ route }) => {
                 style={styles.input}
                 placeholder="Mã lớp *"
                 value={classId}
-                onChangeText={setClassId}
                 editable={false} // Không cho phép sửa mã lớp
             />
             <TextInput

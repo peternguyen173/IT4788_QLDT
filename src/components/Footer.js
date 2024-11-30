@@ -1,22 +1,35 @@
-// src/components/CustomFooter.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Change to the icon set you prefer
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const Footer = ({ onHomePress, onProfilePress }) => {
+const Footer = ({ onHomePress, onProfilePress, onInboxPress, unreadCount }) => {
   return (
-    <View style={styles.footer}>
-      <TouchableOpacity onPress={onHomePress} style={styles.footerItem}>
-        <Icon name="home" size={24} color="#000" />
-        <Text style={styles.footerText}>Trang chủ</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={onProfilePress} style={styles.footerItem}>
-        <Icon name="person" size={24} color="#000" />
-        <Text style={styles.footerText}>Profile</Text>
-      </TouchableOpacity>
-    </View>
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={onHomePress} style={styles.footerItem}>
+          <Icon name="home" size={24} color="#000" />
+          <Text style={styles.footerText}>Trang chủ</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={onInboxPress} style={styles.footerItem}>
+          <View style={styles.iconWithBadge}>
+            <Icon name="chatbubbles" size={24} color="#000" />
+            {unreadCount > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{unreadCount}</Text>
+                </View>
+            )}
+          </View>
+          <Text style={styles.footerText}>Tin nhắn</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={onProfilePress} style={styles.footerItem}>
+          <Icon name="person" size={24} color="#000" />
+          <Text style={styles.footerText}>Profile</Text>
+        </TouchableOpacity>
+      </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   footer: {
@@ -34,6 +47,25 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 16,
+  },
+  iconWithBadge: {
+    position: 'relative',
+  },
+  badge: {
+    position: 'absolute',
+    right: -10,
+    top: -5,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    padding: 3,
+    minWidth: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
 

@@ -31,6 +31,7 @@ const Login = ({ navigation }) => {
           ho: userData.ho,
           ten: userData.ten,
           username: userData.username,
+          email:userData.email,
           token: userData.token,
           active: userData.active,
           role: userData.role,
