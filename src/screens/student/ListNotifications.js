@@ -3,11 +3,17 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import ItemNotification from '../../components/ItemNotification';
 import { useAuth } from '../../navigators/AuthProvider';
 
+
+
 const Notifications = () => {
     const { userData } = useAuth();
     const [notifications, setNotifications] = useState([]);
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [selectedNotifications, setSelectedNotifications] = useState([]);
+
+    
+
+    console.log("User data:", userData);
 
     const get_unread_notifications = async () => {
         try {
@@ -20,6 +26,7 @@ const Notifications = () => {
                     token: userData.token
                 })
             });
+
             if (response.status === 200) {
                 const data = await response.json();
                 setUnreadNotifications(data.data);
@@ -44,6 +51,7 @@ const Notifications = () => {
                     count: 10
                 })
             });
+
             if (response.status === 200) {
                 const data = await response.json();
                 setNotifications(data.data);
@@ -60,6 +68,9 @@ const Notifications = () => {
 
         const notificationIdsAsString = selectedNotifications.map(id => id.toString());
         console.log("Notification IDs as string:", notificationIdsAsString);
+        const test = notificationIdsAsString[0];
+        console.log(test)
+        
         try {
             const response = await fetch('http://157.66.24.126:8080/it5023e/mark_notification_as_read', {
                 method: 'POST',
@@ -68,7 +79,7 @@ const Notifications = () => {
                 },
                 body: JSON.stringify({
                     token: userData.token,
-                    notification_ids: selectedNotifications
+                    notification_id: test
                 })
             });
             console.log(response);

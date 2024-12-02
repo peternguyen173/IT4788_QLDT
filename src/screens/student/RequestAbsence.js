@@ -20,7 +20,7 @@ const RequestAbsence = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { userData } = useAuth();
   console.log('User data:', userData);
-  
+  console.log('Token:', userData.token);
   const handleFileSelect = async (setFieldValue) => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -51,9 +51,9 @@ const RequestAbsence = () => {
   const handleSubmitForm = async (values) => {
     const formData = new FormData();
     formData.append('token', userData.token);
-    formData.append('classId', '000111');
+    formData.append('classId', '123321');
     formData.append('date', formatDate(values.date));
-    formData.append('reason', values.title);
+    formData.append('reason', values.reason);
 
     // Checking if a file was selected
     if (values.file) {
@@ -64,6 +64,7 @@ const RequestAbsence = () => {
         name: file.name || 'uploaded_file', // File name
       });
     }
+    formData.append('title', values.title);
 
     console.log('Form data:', formData);
 
@@ -112,7 +113,8 @@ const RequestAbsence = () => {
             onChangeText={handleChange('title')}
             // aria-disabled
             onBlur={handleBlur('title')}
-            value= "Xin nghỉ học"
+            
+            value= {values.title}
             style={{
               marginBottom: 10, padding: 8, borderColor: 'gray',
               borderRadius: 10, marginTop: 10, borderWidth: 1

@@ -23,6 +23,9 @@ const validationSchema = Yup.object().shape({
 });
 
 const SubmitExam = ({ title, fileExam, desc }) => {
+
+    console.log("title", title) 
+
     return (
         <Formik
             initialValues={{ title: '', reason: '', date: null, file: null }}

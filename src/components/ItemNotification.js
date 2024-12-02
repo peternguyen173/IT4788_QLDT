@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
+
 const ItemNotification = ({
     id, 
     status, 
@@ -15,6 +16,8 @@ const ItemNotification = ({
     isSelected
 }) => {
     const navigation = useNavigation();
+
+    
 
     const handlePressDetail = () => {
         navigation.navigate('DetailNotification');
