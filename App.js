@@ -23,6 +23,16 @@ import CreateClass from "./src/screens/teacher/CreateClass";
 import Assignments from "./src/screens/teacher/Assignments";
 import EditClass from "./src/screens/teacher/EditClass";
 import ErrorScreen from "./src/screens/ErrorScreen";
+import BTStudent from './src/screens/student/BTStudent';
+import BTTeacher from './src/screens/teacher/BTTeacher';
+import CreateSurvey from './src/screens/teacher/CreateSurvey';
+import EditSurvey from './src/screens/teacher/EditSurvey';
+import AssignmentList from './src/screens/teacher/AssignmentList';
+import RatingAssignment from './src/screens/teacher/RatingAssignment';
+import CompletedSubmission from './src/screens/student/CompletedSubmission';
+import PassDueSubmission from './src/screens/student/PassDueSubmission';
+import UpcomingSubmission from './src/screens/student/UpcomingSubmission';
+import Submit from './src/screens/student/Submit';
 
 const Stack = createNativeStackNavigator();
 
@@ -86,6 +96,21 @@ function AppNavigator() {
           <Stack.Screen name="StudentClassInfo">
               {props => <MainLayout title="Thông tin lớp học" navigation={props.navigation}><StudentClassInfo {...props} /></MainLayout>}
           </Stack.Screen>
+          <Stack.Screen name="BTStudent">
+              {props => <MainLayout title="Bài tập" navigation={props.navigation}><BTStudent {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="CompletedSubmission">
+              {props => <MainLayout title="Hoàn thành" navigation={props.navigation}><CompletedSubmission {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="PassDueSubmission">
+              {props => <MainLayout title="Quá hạn" navigation={props.navigation}><PassDueSubmission {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="UpcomingSubmission">
+              {props => <MainLayout title="Đề bài" navigation={props.navigation}><UpcomingSubmission {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="Submit">
+              {props => <MainLayout title="Nộp bài" navigation={props.navigation}><Submit {...props} /></MainLayout>}
+          </Stack.Screen>
           </>
         ) : (
           <>
@@ -122,6 +147,21 @@ function AppNavigator() {
             </Stack.Screen>
             <Stack.Screen name="EditClass">
               {props => <MainLayout title="Sửa lớp học" navigation={props.navigation}><EditClass {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="BTTeacher">
+              {props => <MainLayout title="Bài tập" navigation={props.navigation}><BTTeacher {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="CreateSurvey">
+                {props => <MainLayout title="Tạo bài kiểm tra" navigation={props.navigation}><CreateSurvey {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="EditSurvey">
+                {props => <MainLayout title="Sửa bài kiểm tra" navigation={props.navigation}><EditSurvey {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="AssignmentList">
+                {props => <MainLayout title="Danh sách bài nộp" navigation={props.navigation}><AssignmentList {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="RatingAssignment">
+                {props => <MainLayout title="Chấm điểm" navigation={props.navigation}><RatingAssignment {...props} /></MainLayout>}
             </Stack.Screen>
           </>
         )

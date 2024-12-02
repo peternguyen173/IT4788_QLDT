@@ -112,7 +112,7 @@ const StudentClassInfo = ({ route }) => {
 
         <TouchableOpacity 
           style={styles.button}
-        //   onPress={() => chuyển sang màn hình bài tập
+          onPress={() => navigation.navigate('BTStudent', { classId })}
         >
           <Text style={styles.buttonText}>Bài tập</Text>
         </TouchableOpacity>
