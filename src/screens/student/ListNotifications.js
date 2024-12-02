@@ -9,7 +9,7 @@ const Notifications = () => {
     const { userData } = useAuth();
     const [notifications, setNotifications] = useState([]);
     const [unreadNotifications, setUnreadNotifications] = useState(0);
-    const [selectedNotifications, setSelectedNotifications] = useState([]);
+    // const [selectedNotification, setSelectedNotification] = useState();
 
     
 
@@ -55,6 +55,7 @@ const Notifications = () => {
             if (response.status === 200) {
                 const data = await response.json();
                 setNotifications(data.data);
+                console.log(data.data);
             } else {
                 console.log("Error fetching notifications");
             }
@@ -63,48 +64,10 @@ const Notifications = () => {
         }
     }
 
-    const mark_notifications_as_read = async () => {
-        if (selectedNotifications.length === 0) return;
-
-        const notificationIdsAsString = selectedNotifications.map(id => id.toString());
-        console.log("Notification IDs as string:", notificationIdsAsString);
-        const test = notificationIdsAsString[0];
-        console.log(test)
-        
-        try {
-            const response = await fetch('http://157.66.24.126:8080/it5023e/mark_notification_as_read', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    token: userData.token,
-                    notification_id: test
-                })
-            });
-            console.log(response);
-            if (response.status === 200) {
-                // Reset selected notifications and refresh data
-                setSelectedNotifications([]);
-                get_notifications();
-                get_unread_notifications();
-            } else {
-                console.log("Error marking notifications as read");
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
+    
 
 
 
-    const toggleNotificationSelection = (notificationId) => {
-        setSelectedNotifications(prev =>
-            prev.includes(notificationId)
-                ? prev.filter(id => id !== notificationId)
-                : [...prev, notificationId]
-        );
-    }
 
     useEffect(() => {
         get_notifications();
@@ -113,30 +76,19 @@ const Notifications = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.textProps}>List Notification</Text>
-            <Text style={styles.textProps}>Unread Notification: {unreadNotifications}</Text>
+           
             <FlatList
                 data={notifications}
                 renderItem={({ item }) => (
                     <ItemNotification
                         {...item}
-                        onToggleSelect={() => toggleNotificationSelection(item.id)}
-                        isSelected={selectedNotifications.includes(item.id)}
+                      
                     />
                 )}
                 keyExtractor={item => item.id.toString()}
             />
 
-            {selectedNotifications.length > 0 && (
-                <TouchableOpacity
-                    style={styles.markReadButton}
-                    onPress={() => mark_notifications_as_read()}
-                >
-                    <Text style={styles.markReadButtonText}>
-                        Mark {selectedNotifications.length} Notification(s) as Read
-                    </Text>
-                </TouchableOpacity>
-            )}
+            
         </View>
     );
 }
