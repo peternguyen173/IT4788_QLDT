@@ -14,7 +14,8 @@ const validationSchema = Yup.object().shape({
   file: Yup.mixed().required('Proof file is required'),
 });
 
-const RequestAbsence = () => {
+const RequestAbsence = ({ navigation }) => {
+  const classId = "000111";
   const [selectedFile, setSelectedFile] = useState(null);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -40,6 +41,8 @@ const RequestAbsence = () => {
     }
   };
 
+
+
   const handleDateChange = (event, selectedDate, setFieldValue) => {
     setShowDatePicker(false);
     if (selectedDate) {
@@ -51,7 +54,7 @@ const RequestAbsence = () => {
   const handleSubmitForm = async (values) => {
     const formData = new FormData();
     formData.append('token', userData.token);
-    formData.append('classId', '123321');
+    formData.append('classId', '000111');
     formData.append('date', formatDate(values.date));
     formData.append('reason', values.reason);
 
@@ -97,86 +100,96 @@ const RequestAbsence = () => {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
   return (
-    <Formik
-      initialValues={{ title: '', reason: '', date: null, file: null }}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmitForm}
-    >
-      {({ handleChange, handleBlur, handleSubmit, setFieldValue, values, errors, touched }) => (
+    <>
 
-        <View style={{ padding: 20 }}>
-          <Text style={{ marginBottom: 10 }}>Bạn cần điền đơn này đơn xin phép nghỉ học lớp học này </Text>
-          {/* Title Field */}
-          <Text>Title</Text>
-          <TextInput
-            placeholder="Enter the title"
-            onChangeText={handleChange('title')}
-            // aria-disabled
-            onBlur={handleBlur('title')}
-            
-            value= {values.title}
-            style={{
-              marginBottom: 10, padding: 8, borderColor: 'gray',
-              borderRadius: 10, marginTop: 10, borderWidth: 1
-            }}
-          />
-          {touched.title && errors.title && <Text style={{ color: 'red' }}>{errors.title}</Text>}
 
-          {/* Reason Field */}
-          <Text>Reason</Text>
-          <TextInput
-            placeholder="Enter the reason"
-            onChangeText={handleChange('reason')}
-            onBlur={handleBlur('reason')}
-            value={values.reason}
-            multiline
-            style={{
-              borderWidth: 1, marginBottom: 10, marginTop: 10,
-              padding: 8, height: 100, borderColor: 'gray', borderRadius: 10
+      <Formik
+        initialValues={{ title: '', reason: '', date: null, file: null }}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmitForm}
+      >
+        {({ handleChange, handleBlur, handleSubmit, setFieldValue, values, errors, touched }) => (
 
-            }}
-          />
-          {touched.reason && errors.reason && <Text style={{ color: 'red' }}>{errors.reason}</Text>}
+          <View style={{ padding: 20 }}>
+            <Text style={{ marginBottom: 10 }}>Bạn cần điền đơn này đơn xin phép nghỉ học lớp học này </Text>
+            {/* Title Field */}
+            <Text>Title</Text>
+            <TextInput
+              placeholder="Enter the title"
+              onChangeText={handleChange('title')}
+              // aria-disabled
+              onBlur={handleBlur('title')}
 
-          {/* Date Field */}
-          <Text>Ngày Nghỉ</Text>
-          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ borderWidth: 1, padding: 8, marginBottom: 10, borderColor: 'grey', borderRadius: 10, marginTop: 10 }}>
-            <Text>{values.date ? formatDate(values.date): 'Select date'}</Text>
-          </TouchableOpacity>
-          {touched.date && errors.date && <Text style={{ color: 'red' }}>{errors.date}</Text>}
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="default"
-              onChange={(event, selectedDate) => 
-                handleDateChange(event, selectedDate, setFieldValue)}
+              value={values.title}
+              style={{
+                marginBottom: 10, padding: 8, borderColor: 'gray',
+                borderRadius: 10, marginTop: 10, borderWidth: 1
+              }}
             />
-          )}
+            {touched.title && errors.title && <Text style={{ color: 'red' }}>{errors.title}</Text>}
 
-          {/* File Picker */}
-          <Text style={{marginTop:10}}>Ảnh minh chứng</Text>
-          <View style={{  borderRadius: 20 }}>
-            <TouchableOpacity title="Select File"
-              onPress={() => handleFileSelect(setFieldValue)} color={'red'} style={{ borderRadius: 10,backgroundColor: 'red', padding: 10, alignItems: 'center', marginTop: 10  }}>
-              <Text style={{ color: 'white', fontSize: 16 }} >Chon anh minh chung</Text>
+            {/* Reason Field */}
+            <Text>Reason</Text>
+            <TextInput
+              placeholder="Enter the reason"
+              onChangeText={handleChange('reason')}
+              onBlur={handleBlur('reason')}
+              value={values.reason}
+              multiline
+              style={{
+                borderWidth: 1, marginBottom: 10, marginTop: 10,
+                padding: 8, height: 100, borderColor: 'gray', borderRadius: 10
+
+              }}
+            />
+            {touched.reason && errors.reason && <Text style={{ color: 'red' }}>{errors.reason}</Text>}
+
+            {/* Date Field */}
+            <Text>Ngày Nghỉ</Text>
+            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ borderWidth: 1, padding: 8, marginBottom: 10, borderColor: 'grey', borderRadius: 10, marginTop: 10 }}>
+              <Text>{values.date ? formatDate(values.date) : 'Select date'}</Text>
+            </TouchableOpacity>
+            {touched.date && errors.date && <Text style={{ color: 'red' }}>{errors.date}</Text>}
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) =>
+                  handleDateChange(event, selectedDate, setFieldValue)}
+              />
+            )}
+
+            {/* File Picker */}
+            <Text style={{ marginTop: 10 }}>Ảnh minh chứng</Text>
+            <View style={{ borderRadius: 20 }}>
+              <TouchableOpacity title="Select File"
+                onPress={() => handleFileSelect(setFieldValue)} color={'red'} style={{ borderRadius: 10, backgroundColor: 'red', padding: 10, alignItems: 'center', marginTop: 10 }}>
+                <Text style={{ color: 'white', fontSize: 16 }} >Chon anh minh chung</Text>
+              </TouchableOpacity>
+            </View>
+            {selectedFile && <Text style={{ marginTop: 5 }}>Selected File: {selectedFile.name || selectedFile.uri}</Text>}
+            {touched.file && errors.file && <Text style={{ color: 'red' }}>{errors.file}</Text>}
+
+
+
+
+            <TouchableOpacity title="Submit"
+              style={{ backgroundColor: 'red', padding: 10, alignItems: 'center', borderRadius: 10, marginTop: 20 }}
+              onPress={handleSubmit}>
+              <Text style={{ color: 'white', fontSize: 16 }}>Submit</Text>
             </TouchableOpacity>
           </View>
-          {selectedFile && <Text style={{ marginTop: 5 }}>Selected File: {selectedFile.name || selectedFile.uri}</Text>}
-          {touched.file && errors.file && <Text style={{ color: 'red' }}>{errors.file}</Text>}
+        )}
+      </Formik>
 
-
-          
-
-          <TouchableOpacity title="Submit"
-            style={{ backgroundColor: 'red', padding: 10, alignItems: 'center', borderRadius: 10, marginTop: 20 }}
-            onPress={handleSubmit}>
-            <Text style={{ color: 'white', fontSize: 16 }}>Submit</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </Formik>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('HistoryReqAbsence', { classId })}
+      >
+        <Text >Danh xin nghi cua ban</Text>
+      </TouchableOpacity>
+    </>
   );
 };
 

@@ -12,6 +12,7 @@ import Notifications from './src/screens/student/ListNotifications';
 import RequestAbsence from './src/screens/student/RequestAbsence';
 import SubmitExam from './src/screens/student/SubmitExam';
 import DetailNotification from './src/components/DetaiINotification';
+import HistoryReqAbsence from './src/screens/student/HistoryReqAbsence';
 import * as Notification from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import React, { useEffect, useState } from 'react';
@@ -63,6 +64,9 @@ function AppNavigator() {
             </Stack.Screen>
             <Stack.Screen name="RequestAbsence">
               {props => <MainLayout title="Xin nghỉ học" navigation={props.navigation}><RequestAbsence {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="HistoryReqAbsence">
+              {props => <MainLayout title="Lịch sử xin nghỉ học" navigation={props.navigation}><HistoryReqAbsence {...props} /></MainLayout>}
             </Stack.Screen>
             <Stack.Screen name="SubmitExam">
               {props => <MainLayout title="Nop bai tap" navigation={props.navigation}><SubmitExam {...props} /></MainLayout>}

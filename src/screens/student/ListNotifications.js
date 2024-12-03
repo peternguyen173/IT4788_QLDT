@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import ItemNotification from '../../components/ItemNotification';
 import { useAuth } from '../../navigators/AuthProvider';
+
+
 
 
 
@@ -10,8 +12,8 @@ const Notifications = () => {
     const [notifications, setNotifications] = useState([]);
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     // const [selectedNotification, setSelectedNotification] = useState();
+    const [refreshing, setRefreshing] = useState(false); // Thêm trạng thái làm mới
 
-    
 
     console.log("User data:", userData);
 
@@ -64,10 +66,12 @@ const Notifications = () => {
         }
     }
 
-    
-
-
-
+    const onRefresh = async () => {
+        setRefreshing(true); // Hiển thị vòng tròn tải
+        await get_notifications(); // Tải lại danh sách thông báo
+        await get_unread_notifications(); // Cập nhật số thông báo chưa đọc
+        setRefreshing(false); // Tắt vòng tròn tải
+    };
 
     useEffect(() => {
         get_notifications();
@@ -76,19 +80,25 @@ const Notifications = () => {
 
     return (
         <View style={styles.container}>
-           
+
             <FlatList
                 data={notifications}
                 renderItem={({ item }) => (
                     <ItemNotification
                         {...item}
-                      
+
                     />
                 )}
                 keyExtractor={item => item.id.toString()}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
             />
 
-            
+
         </View>
     );
 }
