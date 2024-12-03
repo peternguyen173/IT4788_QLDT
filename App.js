@@ -72,30 +72,30 @@ function AppNavigator() {
             <Stack.Screen name="StudentHome">
               {props => (
                 <MainLayout title="Trang chủ sinh viên"
-                            navigation={props.navigation}>
+                  navigation={props.navigation}>
                   <StudentHome {...props} />
                 </MainLayout>
               )}
             </Stack.Screen>
             <Stack.Screen name="RegisterClass">
               {props => (
-                  <MainLayout title="QLDT" showBackButton={true}  navigation={props.navigation}>
-                    <RegisterClass {...props} />
-                  </MainLayout>
+                <MainLayout title="QLDT" showBackButton={true} navigation={props.navigation}>
+                  <RegisterClass {...props} />
+                </MainLayout>
               )}
             </Stack.Screen>
             <Stack.Screen name="OpenClassList">
               {props => (
-                  <MainLayout title="QLDT" showBackButton={true} navigation={props.navigation}>
-                    <OpenClassList {...props} />
-                  </MainLayout>
+                <MainLayout title="QLDT" showBackButton={true} navigation={props.navigation}>
+                  <OpenClassList {...props} />
+                </MainLayout>
               )}
             </Stack.Screen>
             <Stack.Screen name="ClassDetail">
               {props => (
-                  <MainLayout title="Thông tin lớp"  showBackButton={true}navigation={props.navigation}>
-                    <ClassDetail {...props} />
-                  </MainLayout>
+                <MainLayout title="Thông tin lớp" showBackButton={true} navigation={props.navigation}>
+                  <ClassDetail {...props} />
+                </MainLayout>
               )}
             </Stack.Screen>
             <Stack.Screen name="StudentProfile">
@@ -106,12 +106,12 @@ function AppNavigator() {
               )}
             </Stack.Screen>
 
-          <Stack.Screen name="StudentClassList">
+            <Stack.Screen name="StudentClassList">
               {props => <MainLayout title="Danh sách lớp học" showBackButton={true} navigation={props.navigation}><StudentClassList {...props} /></MainLayout>}
-          </Stack.Screen>
-          <Stack.Screen name="StudentClassInfo">
+            </Stack.Screen>
+            <Stack.Screen name="StudentClassInfo">
               {props => <MainLayout title="Thông tin lớp học" showBackButton={true} navigation={props.navigation}><StudentClassInfo {...props} /></MainLayout>}
-          </Stack.Screen>
+            </Stack.Screen>
             <Stack.Screen name="ChatScreen">
               {props => <MainLayout title="Tin nhắn" showBackButton={true} navigation={props.navigation}><ChatScreen {...props} /></MainLayout>}
             </Stack.Screen>
@@ -147,36 +147,36 @@ function AppNavigator() {
           <>
             <Stack.Screen name="TeacherHome">
               {props => (
-                <MainLayout title="Trang chủ giảng viên"  navigation={props.navigation}>
+                <MainLayout title="Trang chủ giảng viên" navigation={props.navigation}>
                   <TeacherHome {...props} />
                 </MainLayout>
               )}
             </Stack.Screen>
             <Stack.Screen name="TeacherProfile">
               {props => (
-                <MainLayout title="Profile"   showBackButton={true} // Hiển thị nút quay lại
-                            navigation={props.navigation}>
+                <MainLayout title="Profile" showBackButton={true} // Hiển thị nút quay lại
+                  navigation={props.navigation}>
                   <TeacherProfile {...props} />
                 </MainLayout>
               )}
             </Stack.Screen>
 
 
-          <Stack.Screen name="TeacherClassList">
+            <Stack.Screen name="TeacherClassList">
               {props => <MainLayout title="Danh sách lớp học" showBackButton={true} navigation={props.navigation}><TeacherClassList {...props} /></MainLayout>}
-          </Stack.Screen>
-          <Stack.Screen name="TeacherClassInfo">
+            </Stack.Screen>
+            <Stack.Screen name="TeacherClassInfo">
               {props => <MainLayout title="Thông tin lớp học" showBackButton={true} navigation={props.navigation}><TeacherClassInfo {...props} /></MainLayout>}
-          </Stack.Screen>
-          <Stack.Screen name="TeacherCheckingAttendance">
+            </Stack.Screen>
+            <Stack.Screen name="TeacherCheckingAttendance">
               {props => <MainLayout title="Điểm danh" showBackButton={true} navigation={props.navigation}><TeacherCheckingAttendance {...props} /></MainLayout>}
-          </Stack.Screen>
+            </Stack.Screen>
             <Stack.Screen name="Assignment">
               {props => <MainLayout title="Bài tập" showBackButton={true} navigation={props.navigation}><Assignments {...props} /></MainLayout>}
             </Stack.Screen>
             <Stack.Screen name="CreateClass">
-              {props => <MainLayout title="Tạo lớp học"   showBackButton={true} // Hiển thị nút quay lại
-                                    navigation={props.navigation}><CreateClass {...props} /></MainLayout>}
+              {props => <MainLayout title="Tạo lớp học" showBackButton={true} // Hiển thị nút quay lại
+                navigation={props.navigation}><CreateClass {...props} /></MainLayout>}
             </Stack.Screen>
             <Stack.Screen name="EditClass">
               {props => <MainLayout title="Sửa lớp học" showBackButton={true} navigation={props.navigation}><EditClass {...props} /></MainLayout>}
@@ -191,14 +191,14 @@ function AppNavigator() {
               {props => <MainLayout title="Tin nhắn" showBackButton={true} navigation={props.navigation}><NewConversationScreen {...props} /></MainLayout>}
             </Stack.Screen>
             <Stack.Screen name="ConversationScreen">
-              {props => <MainLayout title="Tin nhắn"  showBackButton={true} navigation={props.navigation}><ConversationScreen {...props} /></MainLayout>}
+              {props => <MainLayout title="Tin nhắn" showBackButton={true} navigation={props.navigation}><ConversationScreen {...props} /></MainLayout>}
             </Stack.Screen>
           </>
         )
       ) : (
         <>
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Verify" component={VerifyScreen} />
           <Stack.Screen name="ErrorScreen" component={ErrorScreen} />
 

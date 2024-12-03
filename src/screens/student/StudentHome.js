@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const StudentHome = ({navigation}) => {
   const { userData } = useAuth();
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
   const transformGoogleDriveLink = (link) => {
     if (link?.includes('drive.google.com')) {
