@@ -1,16 +1,32 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, ScrollView, Image} from 'react-native';
 import { useAuth } from '../../navigators/AuthProvider';
 import Icon from 'react-native-vector-icons/Ionicons'; // Import icon library
+import { useNavigation } from '@react-navigation/native';
 
 const StudentHome = ({navigation}) => {
   const { userData } = useAuth();
+  const navigation = useNavigation();
+
+  const transformGoogleDriveLink = (link) => {
+    if (link?.includes('drive.google.com')) {
+      const fileId = link.split('/d/')[1]?.split('/')[0];
+      return `https://drive.google.com/uc?id=${fileId}`;
+    }
+    return link; // Return original link if not a Google Drive URL
+  };
+
+  const avatar =
+      transformGoogleDriveLink(userData?.avatar) ||
+      'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg';
+
 
 
   const menuItems = [
-    { title: 'Danh sách lớp học', subtitle: 'Danh sách lớp học theo học kỳ', icon: 'book-outline', route: 'ClassList' },
+    { title: 'Danh sách lớp học', subtitle: 'Danh sách lớp học theo học kỳ', icon: 'book-outline', route: 'StudentClassList' },
     { title: 'Đăng ký lớp học', subtitle: 'Tham gia các lớp học mới', icon: 'person-add-outline', route: 'RegisterClass' },
     { title: 'Bài tập', subtitle: 'Nộp và theo dõi bài tập', icon: 'clipboard-outline', route: 'Assignments' },
+    { title: 'Tin nhắn', subtitle: 'Gửi và nhận tin nhắn', icon: 'chatbubbles-outline', route: 'ChatScreen' },
     { title: 'Điểm danh', subtitle: 'Theo dõi điểm danh các buổi học', icon: 'checkmark-done-outline', route: 'Attendance' },
     { title: 'Xin nghỉ học', subtitle: 'Gửi yêu cầu xin nghỉ học', icon: 'calendar-clear-outline', route: 'RequestAbsence' },
     { title: 'Thông báo', subtitle: 'Cập nhật tin tức và thông báo', icon: 'notifications-outline', route: 'Notifications' },
@@ -20,14 +36,17 @@ const StudentHome = ({navigation}) => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.name}>{userData.ho + " " + userData?.ten || 'No name'}</Text>
-          <Text style={styles.info}>Mã sinh viên: {userData?.id || 'N/A'}</Text>
+          <Image source={{ uri: avatar }} style={styles.avatar} />
+          <View>
+            <Text style={styles.name}>{userData?.ho + ' ' + userData?.ten || 'No name'}</Text>
+            <Text style={styles.info}>Mã giảng viên: {userData?.id || 'N/A'}</Text>
+          </View>
         </View>
-        
+
         <View style={styles.grid}>
           {menuItems.map((item, index) => (
-            <TouchableOpacity 
-              key={index} 
+            <TouchableOpacity
+              key={index}
               style={styles.menuItem}
               // Mọi người sửa route ở bảng menuItems rồi bỏ comment câu dưới để navigate
               onPress={() => navigation.navigate(item.route)}
@@ -43,43 +62,55 @@ const StudentHome = ({navigation}) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
   },
   scrollContainer: {
-    paddingVertical: 20,
+    flexGrow: 1, // Đảm bảo nội dung cuộn chiếm toàn bộ chiều cao
+    justifyContent: 'center', // Căn giữa nội dung theo chiều dọc
+    alignItems: 'center', // Căn giữa nội dung theo chiều ngang
+    paddingVertical: 10, // Giảm khoảng trắng dọc của toàn bộ nội dung
     paddingHorizontal: 10,
-    alignItems: 'center',
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 20,
+    marginTop: -130,
+    flexDirection: 'row', // Hiển thị avatar và text ngang hàng
+    alignItems: 'center', // Căn giữa theo chiều dọc
+    justifyContent: 'center', // Căn giữa toàn bộ cụm avatar + tên theo chiều ngang
+  },
+  avatar: {
+    width: 70, // Kích thước avatar lớn hơn
+    height: 70,
+    borderRadius: 35, // Hình tròn
+    marginRight: 15, // Khoảng cách giữa avatar và tên
   },
   name: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#d32f2f', // Dark red
+    textAlign: 'left', // Text bên trái avatar
   },
   info: {
     fontSize: 14,
     color: '#888',
+    textAlign: 'left', // Text bên trái avatar
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    marginTop: 20, // Thêm khoảng cách giữa grid và header
   },
   menuItem: {
-    width: '47%',  // Adjust width to fit two columns
+    width: '47%',
     backgroundColor: '#fff',
     padding: 20,
     marginVertical: 10,
     alignItems: 'center',
     borderRadius: 10,
-    borderColor: '#d32f2f', // Border color red
+    borderColor: '#d32f2f',
     borderWidth: 1,
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -95,7 +126,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#d32f2f', // Dark red
+    color: '#d32f2f',
   },
   subtitle: {
     fontSize: 12,

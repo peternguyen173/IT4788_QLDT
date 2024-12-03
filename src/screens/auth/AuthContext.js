@@ -1,5 +1,6 @@
 // AuthContext.js
 import React, { createContext, useState, useContext } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AuthContext = createContext({});
 
@@ -11,6 +12,11 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(true);
     setUserData(data); // Giả sử data chứa thông tin người dùng, bao gồm cả vai trò
   };
+  const updateUserData =  (updatedData) => {
+    setUserData(updatedData);
+  };
+
+
 
   const logout = () => {
     setIsLoggedIn(false);
@@ -18,7 +24,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userData, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, userData, setUserData, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
