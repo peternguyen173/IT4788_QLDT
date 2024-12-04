@@ -34,7 +34,7 @@ import PassDueSubmission from './src/screens/student/PassDueSubmission';
 import UpcomingSubmission from './src/screens/student/UpcomingSubmission';
 import Submit from './src/screens/student/Submit';
 import HomeWork from './src/screens/teacher/HomeWork';
-import Test from './src/components/Test';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -112,9 +112,6 @@ function AppNavigator() {
           </Stack.Screen>
           <Stack.Screen name="Submit">
               {props => <MainLayout title="Nộp bài" navigation={props.navigation}><Submit {...props} /></MainLayout>}
-          </Stack.Screen>
-          <Stack.Screen name="Test">
-              {props => <MainLayout title="Test" navigation={props.navigation}><Test {...props} /></MainLayout>}
           </Stack.Screen>
           </>
         ) : (
