@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, TouchableOpacity, Linking, Alert, Image } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from '../../navigators/AuthProvider';
@@ -18,13 +18,16 @@ import * as DocumentPicker from 'expo-document-picker';
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
-    desLecturer: Yup.string().required('des is required'),
+    // desLecturer: Yup.string().required('des is required'),
     desStudent: Yup.string().required('Des is required'),
     file: Yup.mixed().required('Proof file is required'),
 });
 
 
-const SubmitExam = ({ title, fileExam, desc }) => {
+const SubmitExam = ({ route }) => {
+    console.log("Dữ liệu bài tập: ", route.params.survey)
+    const { description, fileUrl, id, name, sendTime } = route.params.survey;
+    console.log(description)
     const { userData } = useAuth();
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -47,11 +50,28 @@ const SubmitExam = ({ title, fileExam, desc }) => {
         }
     };
 
+    const handleOpenFileUrl = (url) => {
+        if (url) {
+            Linking.canOpenURL(url)
+                .then((supported) => {
+                    if (supported) {
+                        Linking.openURL(url);
+                    } else {
+                        Alert.alert('Không thể mở URL', 'URL không hợp lệ hoặc không được hỗ trợ.');
+                    }
+                })
+                .catch((err) => console.error('Error opening URL:', err));
+        } else {
+            Alert.alert('Không có URL', 'Không có liên kết để mở.');
+        }
+    };
+
     const handleSubmitForm = async (values) => {
         const formData = new FormData();
         formData.append('token', userData.token);
-        formData.append('assignmentId', '39');
+        formData.append('assignmentId', id);
         formData.append('textResponse', values.desStudent);
+        console.log('Form values:', values.file);
         if (values.file) {
             const file = values.file;  // Using the file from Formik's state
             formData.append('file', {
@@ -64,10 +84,10 @@ const SubmitExam = ({ title, fileExam, desc }) => {
 
         console.log('Form data:', formData);
         try {
-            const response = await axios.post('http://157.66.24.126:8080/it5023e/submit_survey?file', formData, {
+            const response = await axios.post('http://157.66.24.126:8080/it5023e/submit_survey?file', formData,{
                 headers: {
                     'Content-Type': 'multipart/form-data',  // Automatically handled by axios
-                },
+                  },
             });
 
             console.log('Response:', response);
@@ -81,7 +101,7 @@ const SubmitExam = ({ title, fileExam, desc }) => {
             }
         } catch (error) {
             console.error('Error submitting form:', error.response ? error.response.data : error.message);
-            alert(error.response ? error.response.data.message : 'Error submitting form');
+            alert(error.response ? `Lỗi: ${error.response.data.data}. Hành động: ${error.response.data.meta.message}` : 'Error submitting form');
         }
 
 
@@ -100,11 +120,12 @@ const SubmitExam = ({ title, fileExam, desc }) => {
                 <View style={{ padding: 20 }}>
                     <Text style={{ marginBottom: 10 }}>Đây là form để bạn nộp bài tập</Text>
                     {/* Title Field */}
-                    <Text>Title</Text>
+                    <Text>Tiêu đề</Text>
                     <TextInput
                         placeholder="Enter the title"
                         onChangeText={handleChange('title')}
                         // value= {title}
+                        onBlur={handleBlur('title')}
                         style={{
                             marginBottom: 10, padding: 8, borderColor: 'gray',
                             borderRadius: 10, marginTop: 10, borderWidth: 1
@@ -112,29 +133,26 @@ const SubmitExam = ({ title, fileExam, desc }) => {
                     />
                     {touched.title && errors.title && <Text style={{ color: 'red' }}>{errors.title}</Text>}
 
+
+                    {description && <Text style={{ marginBottom: 5 }}>Mô tả của giáo viên: {description}</Text>}
+                    {fileUrl && (
+                        <TouchableOpacity onPress={() => handleOpenFileUrl(fileUrl)}>
+                            <Text style={{ color: 'blue', textDecorationLine: 'underline' }}>Tải file bài tập</Text>
+                        </TouchableOpacity>
+                    )}
+
                     {/* Reason Field */}
-                    <Text>Mo ta cua giao vien</Text>
-                    <TextInput
-                        placeholder="Enter the reason"
-                        onChangeText={handleChange('desLecturer')}
+                    
 
-                        // value= {desLecturer}
-                        style={{
-                            marginBottom: 10, padding: 8, borderColor: 'gray',
-                            borderRadius: 10, marginTop: 10, borderWidth: 1
-                        }}
-                    />
-                    {touched.desLecturer && errors.desLecturer && <Text style={{ color: 'red' }}>{errors.desLecturer}</Text>}
-
-                    <Text>Mo ta cua cua ban</Text>
+                    <Text style={{marginTop:10}}>Mô tả của bạn</Text>
                     <TextInput
                         placeholder="Enter the reason"
                         onChangeText={handleChange('desStudent')}
-                        // onBlur={handleBlur('reason')}
+                        onBlur={handleBlur('desStudent')}
                         // value="mo ta cua giao vien"
                         style={{
                             marginBottom: 10, padding: 8, borderColor: 'gray',
-                            borderRadius: 10, marginTop: 10, borderWidth: 1
+                            borderRadius: 10, marginTop: 0, borderWidth: 1
                         }}
                     />
                     {touched.desStudent && errors.desStudent && <Text style={{ color: 'red' }}>{errors.desStudent}</Text>}

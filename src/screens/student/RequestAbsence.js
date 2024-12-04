@@ -14,8 +14,9 @@ const validationSchema = Yup.object().shape({
   file: Yup.mixed().required('Proof file is required'),
 });
 
-const RequestAbsence = ({ navigation }) => {
-  const classId = "000111";
+const RequestAbsence = ({ navigation,route }) => {
+  console.log(route.params)
+  
   const [selectedFile, setSelectedFile] = useState(null);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -54,7 +55,7 @@ const RequestAbsence = ({ navigation }) => {
   const handleSubmitForm = async (values) => {
     const formData = new FormData();
     formData.append('token', userData.token);
-    formData.append('classId', '000111');
+    formData.append('classId', route.params.classId);
     formData.append('date', formatDate(values.date));
     formData.append('reason', values.reason);
 
@@ -113,6 +114,7 @@ const RequestAbsence = ({ navigation }) => {
           <View style={{ padding: 20 }}>
             <Text style={{ marginBottom: 10 }}>Bạn cần điền đơn này đơn xin phép nghỉ học lớp học này </Text>
             {/* Title Field */}
+            <Text style={{marginBottom:10}}>Bạn đang xin nghi cho lớp {route.params.className} với mã lớp {route.params.classId}</Text>
             <Text>Title</Text>
             <TextInput
               placeholder="Enter the title"
@@ -185,7 +187,7 @@ const RequestAbsence = ({ navigation }) => {
       </Formik>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate('HistoryReqAbsence', { classId })}
+        onPress={() => navigation.navigate('HistoryReqAbsence', { classId: route.params.classId })}
       >
         <Text >Danh xin nghi cua ban</Text>
       </TouchableOpacity>

@@ -2,7 +2,7 @@ import { Text } from "react-native"
 
 
 const DetailNotification = (props) => {
-    console.log(props)
+    
     return (
         <>  
             <Text>dsada</Text>

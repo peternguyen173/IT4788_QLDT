@@ -10,7 +10,8 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
-
+  const [fcmToken, setFcmToken] = useState(null); // fcm token để push notification
+  const [unreadNotifications, setUnreadNotifications] = useState(1); // thông báo chưa đọc
   const login = async (data) => {
     setIsLoggedIn(true);
     setUserData(data);
@@ -54,9 +55,34 @@ export const AuthProvider = ({ children }) => {
       console.error('Error fetching unread count:', error);
     }
   };
+
+  const get_unread_notifications = async () => {
+    try {
+        const response = await fetch('http://157.66.24.126:8080/it5023e/get_unread_notification_count', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: userData.token
+            })
+        });
+
+        if (response.status === 200) {
+            const data = await response.json();
+            setUnreadNotifications(data.data);
+            console.log(data.data); 
+        } else {
+            console.log("Error fetching unread notifications");
+        }
+    } catch (error) {
+        console.error(error);
+    }
+  }
   useEffect(() => {
         if (userData) {
             fetchUnreadCount(); // Ensure unread count is fetched on every mount
+            get_unread_notifications();
         }
     }, [userData]);
   useEffect(() => {
@@ -102,7 +128,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-      <AuthContext.Provider value={{ isLoggedIn, userData, login, logout, loading, setUserData,markInboxAsRead, unreadCount, fetchUnreadCount }}>
+      <AuthContext.Provider value={{ isLoggedIn, userData, login, logout, loading, setUserData,markInboxAsRead, unreadCount, fetchUnreadCount,fcmToken,setFcmToken,unreadNotifications,setUnreadNotifications,get_unread_notifications }}>
       {children}
     </AuthContext.Provider>
   );

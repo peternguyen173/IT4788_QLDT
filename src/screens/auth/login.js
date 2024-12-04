@@ -11,17 +11,18 @@ const Login = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
-  const { login } = useAuth();
+  const { login,fcmToken } = useAuth();
 
   const handleLogin = async () => {
     const device_id = 1; // Assume deviceId is 1
     setLoading(true);
-
+    console.log("dsad",fcmToken);
     try {
       const response = await axios.post('http://157.66.24.126:8080/it4788/login', {
         email,
         password,
         device_id,
+        fcm_token: fcmToken
       });
 
       if (response.status === 200) {

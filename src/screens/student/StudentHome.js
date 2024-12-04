@@ -4,9 +4,9 @@ import { useAuth } from '../../navigators/AuthProvider';
 import Icon from 'react-native-vector-icons/Ionicons'; // Import icon library
 import { useNavigation } from '@react-navigation/native';
 
-const StudentHome = ({navigation}) => {
+const StudentHome = () => {
   const { userData } = useAuth();
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
 
   const transformGoogleDriveLink = (link) => {
     if (link?.includes('drive.google.com')) {
@@ -25,10 +25,8 @@ const StudentHome = ({navigation}) => {
   const menuItems = [
     { title: 'Danh sách lớp học', subtitle: 'Danh sách lớp học theo học kỳ', icon: 'book-outline', route: 'StudentClassList' },
     { title: 'Đăng ký lớp học', subtitle: 'Tham gia các lớp học mới', icon: 'person-add-outline', route: 'RegisterClass' },
-    { title: 'Bài tập', subtitle: 'Nộp và theo dõi bài tập', icon: 'clipboard-outline', route: 'Assignments' },
     { title: 'Tin nhắn', subtitle: 'Gửi và nhận tin nhắn', icon: 'chatbubbles-outline', route: 'ChatScreen' },
     { title: 'Điểm danh', subtitle: 'Theo dõi điểm danh các buổi học', icon: 'checkmark-done-outline', route: 'Attendance' },
-    { title: 'Xin nghỉ học', subtitle: 'Gửi yêu cầu xin nghỉ học', icon: 'calendar-clear-outline', route: 'RequestAbsence' },
     { title: 'Thông báo', subtitle: 'Cập nhật tin tức và thông báo', icon: 'notifications-outline', route: 'Notifications' },
     { title: 'Profile', subtitle: 'Thông tin cá nhân', icon: 'person-circle-outline', route: 'SubmitExam' },
   ];

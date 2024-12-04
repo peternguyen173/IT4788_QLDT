@@ -45,6 +45,7 @@ const ItemNotification = ({
     const handlePressDetail = async () => {
         navigation.navigate('DetailNotification');
         await mark_notifications_as_read(id);
+        
     }
 
     return (

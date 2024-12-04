@@ -7,7 +7,7 @@ const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
-
+  
   const login = (data) => {
     setIsLoggedIn(true);
     setUserData(data); // Giả sử data chứa thông tin người dùng, bao gồm cả vai trò

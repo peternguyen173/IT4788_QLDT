@@ -22,7 +22,7 @@ const TeacherCheckingAttendance = ({ route }) => {
   const { userData, logout } = useAuth();
   const navigation = useNavigation();
   const currentDate = moment().format('YYYY-MM-DD'); // Lấy ngày hiện tại
-
+  const [className, setClassName] = useState("");
   // Fetch dữ liệu sinh viên từ API
   useEffect(() => {
     fetchClassInfo();
@@ -48,6 +48,7 @@ const TeacherCheckingAttendance = ({ route }) => {
       console.log(response.data);
       if (response.data && response.data.data) {
         setStudents(response.data.data.student_accounts); // Lấy danh sách sinh viên
+        setClassName(response.data.data.class_name);
       }
     } catch (error) {
       console.error(error);
@@ -147,6 +148,11 @@ const TeacherCheckingAttendance = ({ route }) => {
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Điểm danh</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button2} onPress={()=> navigation.navigate('TeacherCheckingAbsence',{classId:classId,className:className})} >
+        <Text style={styles.buttonText}>Danh sách sinh viên xin nghỉ học</Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
@@ -207,6 +213,13 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: 'center',
     marginBottom: 20,
+  },
+  button2: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',

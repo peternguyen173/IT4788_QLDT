@@ -27,7 +27,7 @@ import ChatScreen from "./src/screens/student/ChatScreen";
 import ConversationScreen from "./src/screens/student/ConversationScreen";
 import NewConversationScreen from "./src/screens/student/NewConversationScreen";
 import TeacherConversationScreen from "./src/screens/teacher/TeacherConversationScreen";
-
+import TeacherCheckingAbsence from './src/screens/teacher/TeacherCheckingAbsence';
 import Notifications from './src/screens/student/ListNotifications';
 import RequestAbsence from './src/screens/student/RequestAbsence';
 import SubmitExam from './src/screens/student/SubmitExam';
@@ -40,8 +40,9 @@ import { Platform } from 'react-native';
 const Stack = createNativeStackNavigator();
 
 function AppNavigator() {
-  const { isLoggedIn, userData } = useAuth();
-  const [fcmToken, setFcmToken] = useState(null);
+  const { isLoggedIn, userData, setFcmToken, fcmToken, get_unread_notifications} = useAuth();
+  // const [fcmToken, setFcmToken] = useState(null);
+  
 
   useEffect(() => {
     const getNotificationPermission = async () => {
@@ -50,8 +51,9 @@ function AppNavigator() {
         if (status === 'granted') {
           console.log('Notification Permission Granted');
           const token = await Notification.getExpoPushTokenAsync();
-          setFcmToken(token.data);
+          
           console.log('Notification Token:', token.data);
+          setFcmToken(token.data);
         }
       } catch (error) {
         console.error('Notification Permission Error:', error);
@@ -61,8 +63,29 @@ function AppNavigator() {
     getNotificationPermission();
   }, []); // Empty dependency array ensures this runs only once
 
+  Notification.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
 
-
+  useEffect(() => {
+    const notificationListener = Notification.addNotificationReceivedListener(notification => {
+      console.log('Notification Received:', notification);
+      get_unread_notifications();
+    });
+  
+    const responseListener = Notification.addNotificationResponseReceivedListener(response => {
+      console.log('Notification Clicked:', response);
+    });
+  
+    return () => {
+      Notification.removeNotificationSubscription(notificationListener);
+      Notification.removeNotificationSubscription(responseListener);
+    };
+  }, []);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -121,12 +144,6 @@ function AppNavigator() {
             <Stack.Screen name="ConversationScreen">
               {props => <MainLayout title="Tin nhắn" showBackButton={true} navigation={props.navigation}><ConversationScreen {...props} /></MainLayout>}
             </Stack.Screen>
-            <Stack.Screen name="StudentHome">
-              {props => <MainLayout title="Trang chủ sinh viên" navigation={props.navigation}><StudentHome {...props} /></MainLayout>}
-            </Stack.Screen>
-            <Stack.Screen name="StudentProfile">
-              {props => <MainLayout title="Profile" navigation={props.navigation}><StudentProfile {...props} /></MainLayout>}
-            </Stack.Screen>
             <Stack.Screen name="Notifications">
               {props => <MainLayout title="Danh sách thông báo" navigation={props.navigation}><Notifications {...props} /></MainLayout>}
             </Stack.Screen>
@@ -141,6 +158,9 @@ function AppNavigator() {
             </Stack.Screen>
             <Stack.Screen name="SubmitExam">
               {props => <MainLayout title="Nop bai tap" navigation={props.navigation}><SubmitExam {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="Assignments">
+              {props => <MainLayout title="Bài tập" showBackButton={true} navigation={props.navigation}><Assignments {...props} /></MainLayout>}
             </Stack.Screen>
           </>
         ) : (
@@ -171,9 +191,7 @@ function AppNavigator() {
             <Stack.Screen name="TeacherCheckingAttendance">
               {props => <MainLayout title="Điểm danh" showBackButton={true} navigation={props.navigation}><TeacherCheckingAttendance {...props} /></MainLayout>}
             </Stack.Screen>
-            <Stack.Screen name="Assignment">
-              {props => <MainLayout title="Bài tập" showBackButton={true} navigation={props.navigation}><Assignments {...props} /></MainLayout>}
-            </Stack.Screen>
+           
             <Stack.Screen name="CreateClass">
               {props => <MainLayout title="Tạo lớp học" showBackButton={true} // Hiển thị nút quay lại
                 navigation={props.navigation}><CreateClass {...props} /></MainLayout>}
@@ -193,6 +211,11 @@ function AppNavigator() {
             <Stack.Screen name="ConversationScreen">
               {props => <MainLayout title="Tin nhắn" showBackButton={true} navigation={props.navigation}><ConversationScreen {...props} /></MainLayout>}
             </Stack.Screen>
+            <Stack.Screen name="TeacherCheckingAbsence">
+              {props => <MainLayout title="Danh sách xin nghỉ học" showBackButton={true} navigation={props.navigation}><TeacherCheckingAbsence {...props} /></MainLayout>}
+            </Stack.Screen>
+           
+            
           </>
         )
       ) : (

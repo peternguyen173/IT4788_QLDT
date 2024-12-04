@@ -18,7 +18,7 @@ const TeacherClassInfo = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const { userData, logout } = useAuth();
   const navigation = useNavigation();
-
+  console.log(userData.token)
   useEffect(() => {
     fetchClassInfo();
   }, [classId]);
@@ -130,6 +130,7 @@ const TeacherClassInfo = ({ route }) => {
         >
           <Text style={styles.buttonText}>Chỉnh sửa</Text>
         </TouchableOpacity>
+        
       </View>
     </View>
   );

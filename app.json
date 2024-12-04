@@ -21,7 +21,8 @@
       },
       "package": "com.anonymous.qldt",
       "googleServicesFile": "./google-services.json",
-      "useNextNotificationsApi": true
+      "useNextNotificationsApi": true,
+      "permissions": []
     },
     "web": {
       "favicon": "./assets/favicon.png"
