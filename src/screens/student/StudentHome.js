@@ -11,7 +11,7 @@ const StudentHome = () => {
   const menuItems = [
     { title: 'Danh sách lớp học', subtitle: 'Danh sách lớp học theo học kỳ', icon: 'book-outline', route: 'StudentClassList' },
     { title: 'Đăng ký lớp học', subtitle: 'Tham gia các lớp học mới', icon: 'person-add-outline', route: 'RegisterClass' },
-    { title: 'Bài tập', subtitle: 'Nộp và theo dõi bài tập', icon: 'clipboard-outline', route: 'Assignments' },
+    { title: 'Bài tập', subtitle: 'Nộp và theo dõi bài tập', icon: 'clipboard-outline', route: 'Test' },
     { title: 'Điểm danh', subtitle: 'Theo dõi điểm danh các buổi học', icon: 'checkmark-done-outline', route: 'Attendance' },
     { title: 'Xin nghỉ học', subtitle: 'Gửi yêu cầu xin nghỉ học', icon: 'calendar-clear-outline', route: 'RequestLeave' },
     { title: 'Thông báo', subtitle: 'Cập nhật tin tức và thông báo', icon: 'notifications-outline', route: 'Notifications' },

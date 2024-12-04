@@ -18,6 +18,11 @@ const RatingAssignment = ({ navigation, route }) => {
   const { item, title } = route.params;
   const { userData, logout } = useAuth();
   const [score, setScore] = useState();
+  const [scoreText, setScoreText] = useState();
+
+  // if(item.grade == null)
+  //   setScoreText("Nhập điểm")
+  // else setScoreText("Điểm: "+ item.grade)
 
   function formatDate(dateString) {
     // Chuyển chuỗi thành đối tượng Date
@@ -36,6 +41,8 @@ const RatingAssignment = ({ navigation, route }) => {
       .padStart(2, "0")}`;
     return formattedDate;
   }
+
+  
 
   const fetchScore = async () => {
     try {
@@ -122,10 +129,11 @@ const RatingAssignment = ({ navigation, route }) => {
           multiline={true}
           numberOfLines={4}
         />
+        
        
           <TextInput
             style={[styles.input, styles.score]}
-            placeholder="Nhập điểm"
+            placeholder = "Nhập điểm"
             placeholderTextColor="#B22222"
             onChangeText={(newText) => setScore(newText)}
             textAlign="center"

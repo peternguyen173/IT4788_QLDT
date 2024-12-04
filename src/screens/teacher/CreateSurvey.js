@@ -10,56 +10,102 @@ import {
   Platform,
   Alert,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import axios from "axios";
 import { useAuth } from "../../navigators/AuthProvider";
 import { Image } from "react-native";
 
 export default function CreateSurvey({ navigation, route }) {
-  const [startDate, setStartDate] = useState(undefined);
-  const [endDate, setEndDate] = useState(undefined);
-  const [showStartPicker, setShowStartPicker] = useState(false);
-  const [showEndPicker, setShowEndPicker] = useState(false);
+
+  const [date, setDate] = useState(new Date()); // Lưu giá trị ngày/giờ được chọn
+  const [mode, setMode] = useState('date'); // Chế độ: "date" hoặc "time"
+  const [show, setShow] = useState(false); // Hiển thị picker hay không
+  const [selectedDate, setSelectedDate] = useState(''); // Ngày đã chọn
+  const [selectedTime, setSelectedTime] = useState(''); // Giờ đã chọn
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [file, setFile] = useState({
+    uri: Image.resolveAssetSource(require("../../assets/1.png")).uri,
+    type: "image/png",
+    name: "1.png",
+  });
 
   const { classId } = route.params;
   const { userData, logout } = useAuth();
 
-  const onStartDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || startDate;
-    setShowStartPicker(false); // Tắt picker sau khi chọn
-    setStartDate(currentDate);
+  const onChange = (event, selectedValue) => {
+    setShow(false); // Ẩn picker sau khi chọn
+    if (selectedValue) {
+      const currentDate = selectedValue;
+      setDate(currentDate);
+
+      if (mode === 'date') {
+        const formattedDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+        setSelectedDate(formattedDate);
+      } else if (mode === 'time') {
+        const formattedTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+        setSelectedTime(formattedTime);
+      }
+    }
   };
 
-  const onEndDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || endDate;
-    setShowEndPicker(false); // Tắt picker sau khi chọn
-    setEndDate(currentDate);
+  const convertToISOFormat = (dateString, timeString) => {
+    // Tách ngày, tháng, năm từ chuỗi dateString
+    const [day, month, year] = dateString.split('/').map(Number);
+    
+    // Tách giờ và phút từ chuỗi timeString
+    const [hour, minute] = timeString.split(':').map(Number);
+  
+    // Tạo chuỗi theo định dạng ISO
+    const isoString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`;
+  
+    return isoString;
   };
 
+  const showMode = (currentMode) => {
+    setMode(currentMode); // Đặt chế độ: chọn ngày hoặc giờ
+    setShow(true); // Hiển thị picker
+  };
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedImageUri = result.assets[0].uri;
+
+      setFile({
+        uri: selectedImageUri,
+        type: result.assets[0].mimeType || "image/jpeg",
+        name: result.assets[0].fileName || "uploaded_image.jpg",
+      });
+    } else {
+      alert("No image selected or an error occurred.");
+    }
+  };
 
   const CreateSurvey = async () => {
     const formData = new FormData();
+
+    // Thêm file vào FormData
+    formData.append("file", file);
 
     // Thêm các trường khác
     formData.append("token", userData.token);
     formData.append("classId", classId);
     formData.append("title", title);
-    formData.append("deadline", "2024-12-02T12:08:00");
+    formData.append("deadline", convertToISOFormat(selectedDate,selectedTime));
     formData.append("description", description);
 
-    const fakeFile = {
-      uri: Image.resolveAssetSource(require("../../assets/1.png")).uri,
-      type: "image/png",
-      name: "1.png",
-    };
-
-    // Thêm file giả vào FormData (hoặc truyền null nếu API chấp nhận)
-    formData.append("file", fakeFile);
-
     try {
+      // console.log("Dữ liệu gửi đi:", formData);
+
       const response = await axios.post(
         "http://157.66.24.126:8080/it5023e/create_survey?file",
         formData,
@@ -73,11 +119,9 @@ export default function CreateSurvey({ navigation, route }) {
       const { code } = response.data.meta || {};
       if (code == "1000") {
         Alert.alert("Tạo bài kiểm tra thành công", "", [
-
           {
             text: "OK",
-            onPress: () =>
-              navigation.navigate("BTTeacher", { classId }),
+            onPress: () => navigation.navigate("BTTeacher", { classId }),
           },
         ]);
       }
@@ -89,10 +133,7 @@ export default function CreateSurvey({ navigation, route }) {
           { text: "OK", onPress: () => logout() },
         ]);
       } else {
-        Alert.alert(
-          "Lỗi",
-          "Vui lòng thử lại sau."
-        );
+        Alert.alert("Lỗi", "Vui lòng thử lại sau.");
       }
     } finally {
     }
@@ -116,47 +157,53 @@ export default function CreateSurvey({ navigation, route }) {
           onChangeText={(newText) => setDescription(newText)}
         />
         <Text style={styles.orText}>Hoặc</Text>
-        <TouchableOpacity style={styles.uploadButton}>
+        <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
           <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
         </TouchableOpacity>
-        <View style={styles.pickerContainer}>
-          <Pressable
-            onPress={() => setShowStartPicker(true)}
-            style={styles.picker}
-          >
-            <Text style={styles.pickerText}>
-              {startDate
-                ? startDate.toLocaleDateString()
-                : "Bắt đầu                ▼"}
+
+        <View style = {styles.deadline}>
+          <View>
+            <Text style={{ fontSize: 17,fontWeight: "bold", color: "#B22222", marginTop: 2}}>
+              Hạn nộp
             </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setShowEndPicker(true)}
-            style={styles.picker}
-          >
-            <Text style={styles.pickerText}>
-              {endDate
-                ? endDate.toLocaleDateString()
-                : "Kết thúc               ▼"}
-            </Text>
-          </Pressable>
+          </View>
+          <View style={styles.pickerContainer}>
+            <Pressable
+              // onPress={() => setShowStartPicker(true)}
+              onPress={() => showMode('date')}
+              style={[styles.picker, {marginBottom: 5}]}
+            >
+              <Text style={styles.pickerText}>
+                {selectedDate
+                  ? selectedDate
+                  // .toLocaleDateString()
+                  : "Chọn ngày      ▼"}
+              </Text>
+            </Pressable>
+            <Pressable
+              // onPress={() => setShowEndPicker(true)}
+              onPress={() => showMode('time')}
+              style={styles.picker}
+            >
+              <Text style={styles.pickerText}>
+                {selectedTime
+                  ? selectedTime
+                  // .toLocaleDateString()
+                  : "Chọn giờ         ▼"}
+              </Text>
+            </Pressable>
+          </View>
         </View>
-        {showStartPicker && (
-          <DateTimePicker
-            value={startDate || new Date()}
-            mode="date"
-            display="default"
-            onChange={onStartDateChange}
-          />
-        )}
-        {showEndPicker && (
-          <DateTimePicker
-            value={endDate || new Date()}
-            mode="date"
-            display="default"
-            onChange={onEndDateChange}
-          />
-        )}
+
+        {show && (
+        <DateTimePicker
+          value={date} // Ngày/giờ mặc định
+          mode={mode} // Chế độ hiện tại (date/time)
+          is24Hour={true} // Sử dụng giờ 24h
+          display="default" // Giao diện mặc định
+          onChange={onChange} // Xử lý khi chọn
+        />
+      )}
         <TouchableOpacity
           style={styles.submitButton}
           onPress={() => CreateSurvey()}
@@ -212,7 +259,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
-    marginTop: 60,
+    marginTop: 40,
     color: "#333",
     width: "100%",
     backgroundColor: "#f3f3f3",
@@ -223,10 +270,10 @@ const styles = StyleSheet.create({
   },
   orText: {
     textAlign: "center",
-    color: "#B22222",
     marginBottom: 30,
     marginTop: 30,
     fontWeight: "bold",
+    color: "#B22222",
   },
   uploadButton: {
     backgroundColor: "#B22222",
@@ -239,18 +286,18 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
-  pickerContainer: {
+  deadline:{
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 30,
-    marginTop: 30,
+    margin: 30,
+  },
+  pickerContainer: {
+    justifyContent: 'flex-start',
+    marginLeft:35,
   },
   picker: {
-    flex: 1,
     borderColor: "#B22222",
     borderWidth: 1,
     borderRadius: 5,
-    marginHorizontal: 20,
     padding: 10,
     justifyContent: "center",
     backgroundColor: "#f3f3f3",

@@ -14,7 +14,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import axios from "axios";
 import { useAuth } from "../../navigators/AuthProvider";
 
-
 const AssignmentList = ({ navigation, route }) => {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,16 +21,9 @@ const AssignmentList = ({ navigation, route }) => {
   const { title, id } = route.params;
   const [score, setScore] = useState();
 
-
   useEffect(() => {
     fetchAssignments();
   }, []);
-
-  function checkScore(grade){
-    if (grade == null) 
-      return "Chưa chấm điểm "
-    else return "Đã chấm điểm "
-  }
 
   function formatDate(dateString) {
     // Chuyển chuỗi thành đối tượng Date
@@ -58,7 +50,7 @@ const AssignmentList = ({ navigation, route }) => {
         "http://157.66.24.126:8080/it5023e/get_survey_response",
         {
           token: userData.token,
-          survey_id: id, 
+          survey_id: id,
         },
         {
           headers: {
@@ -75,43 +67,57 @@ const AssignmentList = ({ navigation, route }) => {
           { text: "OK", onPress: () => logout() },
         ]);
       } else {
-        Alert.alert(
-          "Lỗi",
-          "Vui lòng thử lại sau."
-        );
+        Alert.alert("Lỗi", "Vui lòng thử lại sau.");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const renderItem = ({ item }) => {
+  function checkScore(grade) {
+    if (grade != null)
+      return (
+        <Text style={{ fontSize: 16 }}>
+          <Text style={styles.name}>Điểm: </Text>
+          <Text> {grade}</Text>
+        </Text>
+      );
+    else
+      return (
+        <Text style={{ fontSize: 16 }}>
+          <Text style={styles.name}>Chưa chấm điểm </Text>
+        </Text>
+      );
+  };
 
+  const renderItem = ({ item }) => {
     return (
-      <View
-        style={styles.classCard}
-      >
+      <View style={styles.classCard}>
         <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('RatingAssignment',{item, title})
-        }}
+          onPress={() => {
+            navigation.navigate("RatingAssignment", { item, title });
+          }}
         >
-          <Text style = {{fontSize: 16}}>
-            <Text style = {styles.name}>Sinh viên: </Text>
-            <Text> {item.student_account.first_name+" "+item.student_account.last_name}</Text>
+          <Text style={{ fontSize: 16 }}>
+            <Text style={styles.name}>Sinh viên: </Text>
+            <Text>
+              {" "}
+              {item.student_account.first_name +
+                " " +
+                item.student_account.last_name}
+            </Text>
           </Text>
-          <Text style = {{fontSize: 16}}>
-            <Text style = {styles.name}>Ngày nộp:</Text> 
+          <Text style={{ fontSize: 16 }}>
+            <Text style={styles.name}>Ngày nộp:</Text>
             <Text> {formatDate(item.submission_time)}</Text>
           </Text>
-          <Text style = {styles.name}>{checkScore(item.grade)}</Text>
+          {checkScore(item.grade)}
         </TouchableOpacity>
       </View>
     );
   };
 
   return (
-
     <View style={styles.container}>
       {loading ? (
         <ActivityIndicator size="large" color="#d32f2f" style={styles.loader} />
@@ -122,7 +128,6 @@ const AssignmentList = ({ navigation, route }) => {
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContainer}
-
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <Icon name="school-outline" size={60} color="#ccc" />
@@ -138,29 +143,27 @@ const AssignmentList = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   name: {
-    fontWeight:"bold",
-    fontSize: 16
+    fontWeight: "bold",
+    fontSize: 16,
   },
- 
+
   containerbtn: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 20,
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#F3F4F6', // Gray-100
+    backgroundColor: "#F3F4F6", // Gray-100
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 9999,
     marginHorizontal: 5,
     borderWidth: 1,
-
   },
   buttonText: {
-    color: '#4B5563', // Gray-700
+    color: "#4B5563", // Gray-700
   },
-
 
   container: {
     flex: 1,
@@ -169,7 +172,7 @@ const styles = StyleSheet.create({
   listContainer: {
     padding: 16,
   },
-  
+
   classCard: {
     flexDirection: "row",
     justifyContent: "space-between",

@@ -14,16 +14,9 @@ import axios from "axios";
 import { useAuth } from "../../navigators/AuthProvider";
 import { useNavigation } from "@react-navigation/native";
 
-const CompletedSubmission = ({ navigation,route}) => {
+const HomeWork = ({ navigation, route}) => {
   const { userData, logout } = useAuth();
-  const { id, title } = route.params;
-  const [data, setData] = useState([]);
-  const [score, setScore] = useState();
-
-
-  useEffect(() => {
-    getSubmission();
-  }, []);
+  const { item } = route.params;
 
   function formatDate(dateString) {
     // Chuyển chuỗi thành đối tượng Date
@@ -44,71 +37,24 @@ const CompletedSubmission = ({ navigation,route}) => {
   }
 
 
-  const getSubmission = async () => {
-    try {
-      const response = await axios.post(
-        "http://157.66.24.126:8080/it5023e/get_submission",
-        {
-          token: userData.token,
-          assignment_id: id, 
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userData.token}`,
-          },
-        }
-      );
-      setData(response.data.data);
-      if (response.data.data.grade == null) {
-        setScore("Chưa có điểm !");
-      } else {
-        setScore("Điểm:  " + response.data.data.grade)
-      }
-
-    } catch (error) {
-      console.error(error);
-      if (error.response && error.response.status === 401) {
-        // Nếu token không hợp lệ hoặc đã hết hạn, đăng xuất
-        Alert.alert("Phiên đăng nhập hết hạn", "Vui lòng đăng nhập lại.", [
-          { text: "OK", onPress: () => logout() },
-        ]);
-      } else {
-        Alert.alert(
-          "Lỗi",
-          "Vui lòng thử lại sau."
-        );
-      }
-    } finally {
-      
-    }
-  };
-
   return (
     <View style={styles.container}>
-      <View style={styles.infoContainer}>
-          <Text style={styles.label}>Đã hoàn thành !</Text>
-          <Text>
-          <Text style={styles.label}>Ngày nộp: </Text>
-          {formatDate(data.submission_time)}
-        </Text>
-      </View>
 
       <View style={styles.form}>
-        <TextInput style={styles.input} value={title} editable={false} />
+        <TextInput style={styles.input} value={item.title} editable={false} />
         <TouchableOpacity
           style={styles.downloadButton}
-           onPress={() => Linking.openURL(data.file_url)}
+          onPress={() => Linking.openURL(item.file_url)}
         >
           <Text style={styles.uploadButtonText}>Mở file </Text>
         </TouchableOpacity>
         <TextInput
           style={[styles.input, styles.textArea]}
-          value={data.text_response}
+          value={item.description}
           editable={false}
           multiline={true}
           numberOfLines={4}
         />
-        <Text style={{fontSize:15, fontWeight:"bold", marginTop:30}}> {score}</Text>
       </View>
     </View>
   );
@@ -118,11 +64,9 @@ const styles = StyleSheet.create({
     
   container: {
     padding: 20,
+    paddingTop:80,
     flex: 1,
     backgroundColor: "white",
-  },
-  infoContainer: {
-    margin: 20,
   },
   label: {
     fontWeight: "bold",
@@ -147,7 +91,10 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#f3f3f3",
   },
-  
+  score:{
+    padding: 5,
+    width: 100,
+  },
   scoreview: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -174,4 +121,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CompletedSubmission;
+export default HomeWork;

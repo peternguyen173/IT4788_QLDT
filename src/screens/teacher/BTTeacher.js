@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image
 } from "react-native";
 import moment from "moment";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -17,6 +18,7 @@ import { useAuth } from "../../navigators/AuthProvider";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+
 
 const BTTeacher = ({ navigation, route }) => {
   const [surveys, setSurveys] = useState([]);
@@ -84,12 +86,13 @@ const BTTeacher = ({ navigation, route }) => {
     }
   };
 
-  const DeleteSurvey = async (id, token) => {
+  const DeleteSurvey = async (id) => {
     try {
+      console.log(""+id+userData.token)
       const response = await axios.post(
         "http://157.66.24.126:8080/it5023e/delete_survey",
         {
-          token: token,
+          token: userData.token,
           survey_id: id,
         },
         {
@@ -135,7 +138,16 @@ const BTTeacher = ({ navigation, route }) => {
         </TouchableOpacity>
 
         <View style={styles.edit_trash}>
+
           <TouchableOpacity style={{ flex: 1 }}>
+            <Feather name="eye" size={24} color="black" 
+              onPress={() => {
+                navigation.navigate("HomeWork", { item });
+              }}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{ marginTop: 3, marginBottom: 5 }}>
             <AntDesign
               name="edit"
               size={24}
@@ -154,11 +166,12 @@ const BTTeacher = ({ navigation, route }) => {
               size={24}
               color="black"
               onPress={() => Alert.alert("Xác nhận !", "Bạn có chắn chắn muốn xóa bài tập này?", [
-                { text: "OK", onPress: () => DeleteSurvey(item.id, userData.token) },
+                { text: "OK", onPress: () => DeleteSurvey(item.id) },
                 { text: "Hủy", style: "cancel" },
               ])}
             />
           </TouchableOpacity>
+          
         </View>
       </View>
     );
@@ -244,6 +257,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+    paddingBottom: 100,
   },
   edit_trash: {
     alignContent: "space-between",

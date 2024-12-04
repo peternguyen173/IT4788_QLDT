@@ -9,6 +9,7 @@ import {
   Alert,
 } from "react-native";
 import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
 import { useAuth } from "../../navigators/AuthProvider";
 import { Image } from "react-native";
 
@@ -16,10 +17,35 @@ export default function Submit({ navigation, route }) {
   const { item } = route.params;
   const { userData, logout } = useAuth();
 
-  const [answer, setAnswer] = useState();
+  const [answer, setAnswer] = useState("");
+  const [file, setFile] = useState({
+    uri: Image.resolveAssetSource(require("../../assets/1.png")).uri,
+    type: "image/png",
+    name: "1.png",
+  });
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedImageUri = result.assets[0].uri;
+
+      setFile({
+        uri: selectedImageUri,
+        type: result.assets[0].mimeType || "image/jpeg",
+        name: result.assets[0].fileName || "uploaded_image.jpg",
+      });
+    } else {
+      alert("No image selected or an error occurred.");
+    }
+  };
 
   const SubmitAnswer = async () => {
-    console.log("" + userData.token + " " + item.id + " " + answer);
     const formData = new FormData();
 
     // Thêm các trường khác
@@ -27,16 +53,11 @@ export default function Submit({ navigation, route }) {
     formData.append("assignmentId", item.id);
     formData.append("textRespone", answer);
 
-    const fakeFile = {
-      uri: Image.resolveAssetSource(require("../../assets/1.png")).uri,
-      type: "image/png",
-      name: "1.png",
-    };
-
-    // Thêm file giả vào FormData (hoặc truyền null nếu API chấp nhận)
-    formData.append("file", fakeFile);
+    // Thêm file vào FormData 
+    formData.append("file", file);
 
     try {
+      console.log("Dữ liệu gửi đi:", formData);
       const response = await axios.post(
         "http://157.66.24.126:8080/it5023e/submit_survey?file",
         formData,
@@ -52,7 +73,7 @@ export default function Submit({ navigation, route }) {
         Alert.alert("Nộp bài kiểm tra thành công", "", [
           {
             text: "OK",
-            onPress: () => navigation.navigate("UpcomingSubmission", { item }),
+            onPress: () => navigation.navigate("BTStudent", { classId: item.class_id }),
           },
         ]);
       }
@@ -65,11 +86,19 @@ export default function Submit({ navigation, route }) {
         ]);
       } else if (error.response && error.response.status === 400) {
         // Nếu token không hợp lệ hoặc đã hết hạn, đăng xuất
-        Alert.alert("Bạn đã nộp bài này rồi.", "Mỗi sinh viên chỉ có thể nộp bài một lần.", [
-          { text: "OK", onPress: () => navigation.navigate("UpcomingSubmission", { item }) },
-        ]);
+        Alert.alert(
+          "Bạn đã nộp bài này rồi.",
+          "Mỗi sinh viên chỉ có thể nộp bài một lần.",
+          [
+            {
+              text: "OK",
+              onPress: () =>
+                navigation.navigate("UpcomingSubmission", { item }),
+            },
+          ]
+        );
       } else {
-        Alert.alert("Lỗi", "Vui lòng thử lại sau.",{text: "OK"});
+        Alert.alert("Lỗi", "Vui lòng thử lại sau.", { text: "OK" });
       }
     } finally {
     }
@@ -87,11 +116,8 @@ export default function Submit({ navigation, route }) {
           numberOfLines={4}
           onChangeText={(newText) => setAnswer(newText)}
         />
-      </View>
-
-      <View style={styles.view2}>
         <Text style={styles.orText}>Hoặc</Text>
-        <TouchableOpacity style={styles.uploadButton}>
+        <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
           <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
         </TouchableOpacity>
 
@@ -146,15 +172,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
     alignItems: "center",
   },
-  view2: {
-    flex: 1,
-    backgroundColor: "white",
-    padding: 20,
-    paddingTop: 0,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    alignItems: "center",
-  },
   input: {
     borderColor: "#B22222",
     borderWidth: 1,
@@ -182,7 +199,7 @@ const styles = StyleSheet.create({
   orText: {
     textAlign: "center",
     color: "#B22222",
-    marginBottom: 30,
+    margin: 30,
     fontWeight: "bold",
   },
   uploadButton: {

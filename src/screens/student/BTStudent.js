@@ -83,19 +83,21 @@ const BTStudent = ({ navigation, route }) => {
         style={styles.classCard}
         onPress={() => {
           if (duration == "UPCOMING")
-            navigation.navigate("UpcomingSubmission",{item});
+            navigation.navigate("UpcomingSubmission", { item });
           else if (duration == "PASS_DUE")
-            navigation.navigate("PassDueSubmission",{item});
+            navigation.navigate("PassDueSubmission", { item });
           else
-            navigation.navigate("CompletedSubmission",{id: item.id, title: item.title});
+            navigation.navigate("CompletedSubmission", {
+              id: item.id,
+              title: item.title,
+            });
         }}
       >
-        <Text style = {{fontSize: 15, fontWeight: "bold"}}>{item.title}</Text>
-        <Text style = {{fontSize: 15}}>
-          <Text style = {{fontWeight: "bold"}}>Hạn nộp:</Text>
+        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{item.title}</Text>
+        <Text style={{ fontSize: 15 }}>
+          <Text style={{ fontWeight: "bold" }}>Hạn nộp:</Text>
           <Text> {formatDate(item.deadline)}</Text>
         </Text>
-        
       </TouchableOpacity>
     );
   };
@@ -105,7 +107,7 @@ const BTStudent = ({ navigation, route }) => {
       {loading ? (
         <ActivityIndicator size="large" color="#d32f2f" style={styles.loader} />
       ) : (
-        <View>
+        <View >
           <View style={styles.containerbtn}>
             <TouchableOpacity
               style={styles.button}
@@ -128,19 +130,23 @@ const BTStudent = ({ navigation, route }) => {
               <Text style={styles.buttonText}>Đã hoàn thành</Text>
             </TouchableOpacity>
           </View>
-          
-          <FlatList
-            data={assignments}
-            renderItem={renderClassItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContainer}
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <Icon name="school-outline" size={60} color="#ccc" />
-                <Text style={styles.emptyText}>Không có bài kiểm tra nào</Text>
-              </View>
-            }
-          />
+
+          <View >
+            <FlatList
+              data={assignments}
+              renderItem={renderClassItem}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.listContainer}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Icon name="school-outline" size={60} color="#ccc" />
+                  <Text style={styles.emptyText}>
+                    Không có bài kiểm tra nào
+                  </Text>
+                </View>
+              }
+            />
+          </View>
         </View>
       )}
     </View>
@@ -148,12 +154,18 @@ const BTStudent = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    // flex: 1,
+    // backgroundColor: "#d32f2f",
+  },
   containerbtn: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 20,
+    
   },
+  
   button: {
     backgroundColor: "#B22222", // Gray-100
     paddingVertical: 10,
@@ -167,12 +179,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  container: {
-    flex: 1,
-    // backgroundColor: "#d32f2f",
-  },
+  
   listContainer: {
     padding: 16,
+    paddingBottom: 250,
   },
   classCard: {
     backgroundColor: "#fff",
