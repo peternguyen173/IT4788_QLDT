@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import { useAuth } from "../../navigators/AuthProvider";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 const BTTeacher = ({ navigation, route }) => {
@@ -25,14 +26,20 @@ const BTTeacher = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const { userData, logout } = useAuth();
   const { classId } = route.params;
-  const [updateDelete, setUpdateDelete] = useState(true);
+  const [update, setUpdate] = useState(true);
 
   useEffect(() => {
     fetchSurveys();
   }, []);
   useEffect(() => {
     fetchSurveys();
-  }, [updateDelete]);
+  }, [update]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchSurveys();
+    }, [])
+  );
 
   function formatDate(dateString) {
     // Chuyển chuỗi thành đối tượng Date
@@ -67,7 +74,7 @@ const BTTeacher = ({ navigation, route }) => {
           },
         }
       );
-      setSurveys(response.data.data);
+      setSurveys(response.data.data.reverse());
     } catch (error) {
       console.error(error);
       if (error.response && error.response.status === 401) {
@@ -88,7 +95,7 @@ const BTTeacher = ({ navigation, route }) => {
 
   const DeleteSurvey = async (id) => {
     try {
-      console.log(""+id+userData.token)
+      setLoading(true)
       const response = await axios.post(
         "http://157.66.24.126:8080/it5023e/delete_survey",
         {
@@ -101,11 +108,12 @@ const BTTeacher = ({ navigation, route }) => {
           },
         }
       );
+      
       console.log(response.data);
       if (response.data.meta.code == "1000") {
         Alert.alert("Xóa bài tập thành công.", "", [
           { text: "OK" },
-          setUpdateDelete(!updateDelete),
+          setUpdate(!update),
         ]);
       }
     } catch (error) {
@@ -118,6 +126,8 @@ const BTTeacher = ({ navigation, route }) => {
       } else {
         Alert.alert("Lỗi", "Không thể xóa. Vui lòng thử lại sau.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 

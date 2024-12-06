@@ -18,11 +18,7 @@ const RatingAssignment = ({ navigation, route }) => {
   const { item, title } = route.params;
   const { userData, logout } = useAuth();
   const [score, setScore] = useState();
-  const [scoreText, setScoreText] = useState();
-
-  // if(item.grade == null)
-  //   setScoreText("Nhập điểm")
-  // else setScoreText("Điểm: "+ item.grade)
+  const [loading, setLoading] = useState(false);
 
   function formatDate(dateString) {
     // Chuyển chuỗi thành đối tượng Date
@@ -42,19 +38,18 @@ const RatingAssignment = ({ navigation, route }) => {
     return formattedDate;
   }
 
-  
-
   const fetchScore = async () => {
     try {
+      setLoading(true);
       const response = await axios.post(
         "http://157.66.24.126:8080/it5023e/get_survey_response",
         {
           token: userData.token,
-          survey_id: item.assignment_id, 
+          survey_id: item.assignment_id,
           grade: {
             score: score,
-            submission_id: item.id
-          }
+            submission_id: item.id,
+          },
         },
         {
           headers: {
@@ -67,9 +62,10 @@ const RatingAssignment = ({ navigation, route }) => {
         Alert.alert("Chấm điểm thành công", "", [
           {
             text: "OK",
-            onPress: () =>{ id = item.assignment_id,
-                navigation.navigate("AssignmentList", {title,  id})}
-              
+            onPress: () => {
+              (id = item.assignment_id),
+                navigation.navigate("AssignmentList", { title, id });
+            },
           },
         ]);
       }
@@ -81,77 +77,77 @@ const RatingAssignment = ({ navigation, route }) => {
           { text: "OK", onPress: () => logout() },
         ]);
       } else {
-        Alert.alert(
-          "Lỗi",
-          "Vui lòng thử lại sau."
-        );
+        Alert.alert("Lỗi", "Vui lòng thử lại sau.");
       }
     } finally {
-      
+      setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.infoContainer}>
-        <Text>
-          <Text style={styles.label}>Họ tên: </Text>
-          {item.student_account.first_name +
-            " " +
-            item.student_account.last_name}
-        </Text>
-        <Text>
-          <Text style={styles.label}>MSSV: </Text>
-          {item.student_account.student_id}
-        </Text>
-        <Text>
-          <Text style={styles.label}>Email: </Text>
-          {item.student_account.email}
-        </Text>
-        <Text>
-          <Text style={styles.label}>Ngày nộp: </Text>
-          {formatDate(item.submission_time)}
-        </Text>
-      </View>
+    <View style = {{flex: 1}}>
+      {loading ? (
+        <ActivityIndicator size="large" color="#d32f2f" style={styles.loader} />
+      ) : (
+      <View style={styles.container}>
+        <View style={styles.infoContainer}>
+          <Text>
+            <Text style={styles.label}>Họ tên: </Text>
+            {item.student_account.first_name +
+              " " +
+              item.student_account.last_name}
+          </Text>
+          <Text>
+            <Text style={styles.label}>MSSV: </Text>
+            {item.student_account.student_id}
+          </Text>
+          <Text>
+            <Text style={styles.label}>Email: </Text>
+            {item.student_account.email}
+          </Text>
+          <Text>
+            <Text style={styles.label}>Ngày nộp: </Text>
+            {formatDate(item.submission_time)}
+          </Text>
+        </View>
 
-      <View style={styles.form}>
-        <TextInput style={styles.input} value={title} editable={false} />
-        <TouchableOpacity
-          style={styles.downloadButton}
-          onPress={() => Linking.openURL(item.file_url)}
-        >
-          <Text style={styles.uploadButtonText}>Mở file </Text>
-        </TouchableOpacity>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          value={item.text_response}
-          editable={false}
-          multiline={true}
-          numberOfLines={4}
-        />
-        
-       
+        <View style={styles.form}>
+          <TextInput style={styles.input} value={title} editable={false} />
+          <TouchableOpacity
+            style={styles.downloadButton}
+            onPress={() => Linking.openURL(item.file_url)}
+          >
+            <Text style={styles.uploadButtonText}>Mở file </Text>
+          </TouchableOpacity>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            value={item.text_response}
+            editable={false}
+            multiline={true}
+            numberOfLines={4}
+          />
+
           <TextInput
             style={[styles.input, styles.score]}
-            placeholder = "Nhập điểm"
+            placeholder="Nhập điểm"
             placeholderTextColor="#B22222"
             onChangeText={(newText) => setScore(newText)}
             textAlign="center"
           />
           <TouchableOpacity
-            style={[styles.downloadButton,styles.scoreButton]}
+            style={[styles.downloadButton, styles.scoreButton]}
             onPress={() => fetchScore()}
           >
             <Text style={styles.uploadButtonText}>Chấm điểm </Text>
           </TouchableOpacity>
-     
+        </View>
       </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-    
   container: {
     padding: 20,
     flex: 1,
@@ -183,16 +179,15 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#f3f3f3",
   },
-  score:{
+  score: {
     padding: 5,
     width: 100,
   },
   scoreview: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 
-  
   downloadButton: {
     backgroundColor: "#B22222",
     padding: 10,
@@ -202,7 +197,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     marginBottom: 15,
   },
-  scoreButton:{
+  scoreButton: {
     width: 100,
   },
   uploadButtonText: {
@@ -210,12 +205,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-
   textArea: {
     height: 250,
     textAlignVertical: "top",
   },
-  
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 export default RatingAssignment;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import moment from "moment";
 import axios from "axios";
 import { useAuth } from "../../navigators/AuthProvider";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useFocusEffect } from "@react-navigation/native";
 
 const BTStudent = ({ navigation, route }) => {
   const [assignments, setAssignments] = useState([]);
@@ -23,6 +24,12 @@ const BTStudent = ({ navigation, route }) => {
   useEffect(() => {
     fetchClasses();
   }, [duration]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchClasses();
+    }, [])
+  );
 
   function formatDate(dateString) {
     // Chuyển chuỗi thành đối tượng Date
@@ -58,7 +65,7 @@ const BTStudent = ({ navigation, route }) => {
           },
         }
       );
-      setAssignments(response.data.data);
+      setAssignments(response.data.data.reverse());
     } catch (error) {
       console.error(error);
       if (error.response && error.response.status === 401) {
@@ -155,7 +162,7 @@ const BTStudent = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
     // backgroundColor: "#d32f2f",
   },
   containerbtn: {

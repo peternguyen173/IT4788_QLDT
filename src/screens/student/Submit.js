@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
@@ -16,12 +17,14 @@ import { Image } from "react-native";
 export default function Submit({ navigation, route }) {
   const { item } = route.params;
   const { userData, logout } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [pic, setPic] = useState(false);
 
   const [answer, setAnswer] = useState("");
   const [file, setFile] = useState({
-    uri: Image.resolveAssetSource(require("../../assets/1.png")).uri,
+    uri: Image.resolveAssetSource(require("../../assets/2.png")).uri,
     type: "image/png",
-    name: "1.png",
+    name: "2.png",
   });
 
   const pickImage = async () => {
@@ -40,6 +43,7 @@ export default function Submit({ navigation, route }) {
         type: result.assets[0].mimeType || "image/jpeg",
         name: result.assets[0].fileName || "uploaded_image.jpg",
       });
+      setPic(true)
     } else {
       alert("No image selected or an error occurred.");
     }
@@ -53,11 +57,11 @@ export default function Submit({ navigation, route }) {
     formData.append("assignmentId", item.id);
     formData.append("textRespone", answer);
 
-    // Thêm file vào FormData 
+    // Thêm file vào FormData
     formData.append("file", file);
 
     try {
-      console.log("Dữ liệu gửi đi:", formData);
+      setLoading(true);
       const response = await axios.post(
         "http://157.66.24.126:8080/it5023e/submit_survey?file",
         formData,
@@ -73,7 +77,8 @@ export default function Submit({ navigation, route }) {
         Alert.alert("Nộp bài kiểm tra thành công", "", [
           {
             text: "OK",
-            onPress: () => navigation.navigate("BTStudent", { classId: item.class_id }),
+            onPress: () =>
+              navigation.navigate("BTStudent", { classId: item.class_id }),
           },
         ]);
       }
@@ -101,33 +106,49 @@ export default function Submit({ navigation, route }) {
         Alert.alert("Lỗi", "Vui lòng thử lại sau.", { text: "OK" });
       }
     } finally {
+      setLoading(false);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.form}>
-        <TextInput style={styles.input} value={item.title} editable={false} />
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Bài làm"
-          placeholderTextColor="#B22222"
-          multiline={true}
-          numberOfLines={4}
-          onChangeText={(newText) => setAnswer(newText)}
-        />
-        <Text style={styles.orText}>Hoặc</Text>
-        <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-          <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
-        </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#d32f2f" style={styles.loader} />
+      ) : (
+        <View style={styles.form}>
+          <TextInput style={styles.input} value={item.title} editable={false} />
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Bài làm"
+            placeholderTextColor="#B22222"
+            multiline={true}
+            numberOfLines={4}
+            maxLength={2000}
+            onChangeText={(newText) => setAnswer(newText)}
+            value={answer}
+          />
+          <Text style={{ fontSize: 11, color: "#B22222", marginTop: 10 }}>
+            {answer.length}/2000 ký tự
+          </Text>
+          <Text style={styles.orText}>Hoặc</Text>
+          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+            <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={() => SubmitAnswer()}
-        >
-          <Text style={styles.submitButtonText}>Submit</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => {
+              if (!answer.trim() && !pic) {
+                Alert.alert("Lỗi", "Bạn cần điền câu trả lời hoặc tải tài liệu lên.");
+                return;
+              }
+              SubmitAnswer()
+            }}
+          >
+            <Text style={styles.submitButtonText}>Submit</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -224,5 +245,10 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: "white",
     fontWeight: "bold",
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
