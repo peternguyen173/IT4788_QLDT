@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 import axios from "axios";
 import { useAuth } from "../../navigators/AuthProvider";
+import { useFocusEffect } from "@react-navigation/native";
 
 const AssignmentList = ({ navigation, route }) => {
   const [assignments, setAssignments] = useState([]);
@@ -24,6 +25,12 @@ const AssignmentList = ({ navigation, route }) => {
   useEffect(() => {
     fetchAssignments();
   }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAssignments();
+    }, [])
+  );
+
 
   function formatDate(dateString) {
     // Chuyển chuỗi thành đối tượng Date
