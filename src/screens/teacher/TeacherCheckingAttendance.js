@@ -60,7 +60,7 @@ const TeacherCheckingAttendance = ({ route }) => {
   const [attendanceIds, setAttendanceIds] = useState({});
   const { userData, logout } = useAuth();
   const navigation = useNavigation();
-  const currentDate = moment().format('YYYY-MM-DD');
+  const currentDate = moment().format("YYYY-MM-DD");
 
   // Fetch dữ liệu sinh viên từ API
   useEffect(() => {
@@ -140,6 +140,11 @@ const TeacherCheckingAttendance = ({ route }) => {
       console.log("Goi danh sach diem danh");
       console.log(response.data.data.attendance_student_details);
 
+      if (!response.data.data.attendance_student_details || response.data.data.attendance_student_details.length === 0) {
+        console.log("Không có dữ liệu điểm danh cho ngày này");
+        return;
+      }
+
       if (response.data && response.data.data && response.data.data.attendance_student_details && response.data.data.attendance_student_details.length > 0) {
         // Nếu đã điểm danh trước đó, cập nhật DS điểm danh
         const existingAttendance = {};
@@ -154,7 +159,9 @@ const TeacherCheckingAttendance = ({ route }) => {
         setAttendanceIds(existingAttendanceIds);
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.status === 400) {
+        console.log("Điểm danh ngày mới nên dữ liệu điểm danh chưa có");
+      }
     }
   };
 
@@ -210,17 +217,43 @@ const TeacherCheckingAttendance = ({ route }) => {
         }
       );
 
+      const attendanceListResponse = await axios.post(
+        'http://157.66.24.126:8080/it5023e/get_attendance_list',
+        {
+          token: userData.token,
+          class_id: classId,
+          date: currentDate,
+          pageable_request: {
+            page: "0",
+            page_size: numberOfStudents,
+          }
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${userData.token}`,
+          },
+        }
+      );
+
+      // Cập nhật lại attendanceIds
+      const updatedAttendanceIds = {};
+      if (attendanceListResponse.data && attendanceListResponse.data.data && 
+          attendanceListResponse.data.data.attendance_student_details) {
+        attendanceListResponse.data.data.attendance_student_details.forEach(attendance => {
+          updatedAttendanceIds[attendance.student_id] = attendance.attendance_id;
+        });
+      }
+
       // Gọi API set_attendance_status cho sinh viên vắng có phép
       for (const studentId of excusedAbsenceList) {
-        const attendanceId = attendanceIds[studentId];
-        const calculatedAttendanceId = parseInt(attendanceId, 10) + numberOfStudents;
+        const attendanceId = updatedAttendanceIds[studentId];
         if (attendanceId) {
           const response = await axios.post(
             'http://157.66.24.126:8080/it5023e/set_attendance_status',
             {
               token: userData.token,
               status: 'EXCUSED_ABSENCE',
-              attendance_id: calculatedAttendanceId,
+              attendance_id: attendanceId,
             },
             {
               headers: {
@@ -230,7 +263,6 @@ const TeacherCheckingAttendance = ({ route }) => {
           );
           console.log(response.data);
         }
-        
       }
 
       Alert.alert('Điểm danh', 'Điểm danh thành công!');

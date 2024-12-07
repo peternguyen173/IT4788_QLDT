@@ -16,6 +16,7 @@ import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useAuth } from '../../navigators/AuthProvider';
 import * as DocumentPicker from 'expo-document-picker';
+import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import mime from 'mime';
 
@@ -29,6 +30,8 @@ const TeacherClassInfo = ({ route }) => {
   const [materialType, setMaterialType] = useState('');
   const { userData, logout } = useAuth();
   const [files, setFiles] = useState([]);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchClassInfo();
