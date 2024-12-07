@@ -19,6 +19,7 @@ export default function Submit({ navigation, route }) {
   const { userData, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [pic, setPic] = useState(false);
+  const [fileText, setFileText] = useState(false);
 
   const [answer, setAnswer] = useState("");
   const [file, setFile] = useState({
@@ -44,6 +45,7 @@ export default function Submit({ navigation, route }) {
         name: result.assets[0].fileName || "uploaded_image.jpg",
       });
       setPic(true)
+      setFileText(true)
     } else {
       alert("No image selected or an error occurred.");
     }
@@ -134,6 +136,12 @@ export default function Submit({ navigation, route }) {
           <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
             <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
           </TouchableOpacity>
+          {fileText && (
+              <Text style={{ fontSize: 11 }}>
+                <Text>Selected File: </Text>
+                {file.name}
+              </Text>
+            )}
 
           <TouchableOpacity
             style={styles.submitButton}
@@ -229,7 +237,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     width: 180,
-    marginBottom: 30,
+    marginBottom: 5,
   },
   uploadButtonText: {
     color: "white",
@@ -241,6 +249,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     width: 100,
+    marginTop: 30
   },
   submitButtonText: {
     color: "white",

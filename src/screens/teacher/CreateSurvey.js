@@ -33,6 +33,7 @@ export default function CreateSurvey({ navigation, route }) {
     type: "image/png",
     name: "2.png",
   });
+  const [fileText, setFileText] = useState(false);
 
   const { classId } = route.params;
   const { userData, logout } = useAuth();
@@ -93,7 +94,8 @@ export default function CreateSurvey({ navigation, route }) {
         type: result.assets[0].mimeType || "image/jpeg",
         name: result.assets[0].fileName || "uploaded_image.jpg",
       });
-      setPic(true)
+      setPic(true);
+      setFileText(true);
     } else {
       alert("No image selected or an error occurred.");
     }
@@ -102,7 +104,7 @@ export default function CreateSurvey({ navigation, route }) {
   function checkDescription(inputString) {
     // Kiểm tra nếu chuỗi không có ký tự nào (chỉ chứa khoảng trắng hoặc rỗng)
     if (!inputString.trim()) {
-      setDescription("Không có mô tả cho đề bài.")
+      setDescription("Không có mô tả cho đề bài.");
       return "Không có mô tả cho đề bài.";
     }
     // Nếu chuỗi có nội dung, trả về chuỗi ban đầu
@@ -171,7 +173,7 @@ export default function CreateSurvey({ navigation, route }) {
               placeholder="Tên bài kiểm tra *"
               placeholderTextColor="#B22222"
               onChangeText={(newText) => setTitle(newText)}
-              value = {title}
+              value={title}
             />
             <TextInput
               style={[styles.input, styles.textArea]}
@@ -180,18 +182,22 @@ export default function CreateSurvey({ navigation, route }) {
               multiline={true}
               numberOfLines={4}
               maxLength={2000} // Giới hạn số ký tự tối đa
-              onChangeText={
-                (newText) => setDescription(newText)
-              }
+              onChangeText={(newText) => setDescription(newText)}
               value={description}
             />
-            <Text style = {{fontSize: 11, color: "#B22222", marginTop: 10}}>
+            <Text style={{ fontSize: 11, color: "#B22222", marginTop: 10 }}>
               {description.length}/2000 ký tự
             </Text>
             <Text style={styles.orText}>Hoặc</Text>
             <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
               <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
             </TouchableOpacity>
+            {fileText && (
+              <Text style={{ fontSize: 11 }}>
+                <Text>Selected File: </Text>
+                {file.name}
+              </Text>
+            )}
 
             <View style={styles.deadline}>
               <View>
@@ -251,7 +257,10 @@ export default function CreateSurvey({ navigation, route }) {
                   return;
                 }
                 if (!description.trim() && !pic) {
-                  Alert.alert("Lỗi", "Bạn cần mô tả bài tập hoặc tải tài liệu lên.");
+                  Alert.alert(
+                    "Lỗi",
+                    "Bạn cần mô tả bài tập hoặc tải tài liệu lên."
+                  );
                   return;
                 }
                 if (!selectedDate || !selectedTime) {
@@ -325,8 +334,8 @@ const styles = StyleSheet.create({
   },
   orText: {
     textAlign: "center",
-    marginBottom: 30,
-    marginTop: 30,
+    marginBottom: 20,
+    marginTop: 20,
     fontWeight: "bold",
     color: "#B22222",
   },
@@ -336,6 +345,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     width: 180,
+    marginBottom: 5,
   },
   uploadButtonText: {
     color: "white",

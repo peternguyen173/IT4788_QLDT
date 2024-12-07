@@ -28,6 +28,7 @@ export default function EditSurvey({ navigation, route }) {
   const { userData, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [pic, setPic] = useState(false);
+  const [fileText, setFileText] = useState(false);
 
   const [description, setDescription] = useState("");
   const [file, setFile] = useState({
@@ -93,6 +94,7 @@ export default function EditSurvey({ navigation, route }) {
         name: result.assets[0].fileName || "uploaded_image.jpg",
       });
       setPic(true)
+      setFileText(true)
     } else {
       alert("No image selected or an error occurred.");
     }
@@ -171,6 +173,12 @@ export default function EditSurvey({ navigation, route }) {
             <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
               <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
             </TouchableOpacity>
+            {fileText && (
+              <Text style={{ fontSize: 11 }}>
+                <Text>Selected File: </Text>
+                {file.name}
+              </Text>
+            )}
 
             <View style={styles.deadline}>
               <View>
@@ -311,6 +319,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     width: 180,
+    marginBottom: 5,
   },
   uploadButtonText: {
     color: "white",
