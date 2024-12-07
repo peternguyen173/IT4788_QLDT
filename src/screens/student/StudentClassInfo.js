@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { useAuth } from '../../navigators/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
+import moment from 'moment';
 
 const StudentClassInfo = ({ route }) => {
   const { classId } = route.params; // Nhận classId từ route params
@@ -116,6 +117,13 @@ const StudentClassInfo = ({ route }) => {
         >
           <Text style={styles.buttonText}>Bài tập</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => navigation.navigate('StudentClassMaterial', { classId })}
+        >
+          <Text style={styles.buttonText}>Tài liệu lớp học</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -145,21 +153,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',  // Sử dụng column thay vì row để hiển thị các button theo cột
+    alignItems: 'center',     // Căn giữa các nút
+    justifyContent: 'space-around', // Đảm bảo có khoảng cách đều giữa các nút
     marginTop: 20,
   },
   button: {
     backgroundColor: '#4CAF50',
-    padding: 10,
+    padding: 5,
     borderRadius: 5,
-    width: '45%',
+    width: '80%',             // Đặt chiều rộng các nút là 80% của màn hình
     alignItems: 'center',
+    marginBottom: 10,         // Thêm marginBottom để tạo khoảng cách giữa các nút
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
   },
 });
+
 
 export default StudentClassInfo;
