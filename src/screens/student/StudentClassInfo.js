@@ -89,8 +89,8 @@ const StudentClassInfo = ({ route }) => {
         <Text><Text style={styles.label}>Tên lớp: </Text>{classInfo.class_name}</Text>
         <Text><Text style={styles.label}>Loại lớp: </Text>{classInfo.class_type}</Text>
         <Text><Text style={styles.label}>Giảng viên: </Text>{classInfo.lecturer_name}</Text>
-        <Text><Text style={styles.label}>Ngày bắt đầu: </Text>{classInfo.start_date}</Text>
-        <Text><Text style={styles.label}>Ngày kết thúc: </Text>{classInfo.end_date}</Text>
+        <Text><Text style={styles.label}>Ngày bắt đầu: </Text>{moment(classInfo.start_date).format("DD-MM-YYYY")}</Text>
+        <Text><Text style={styles.label}>Ngày kết thúc: </Text>{moment(classInfo.end_date).format("DD-MM-YYYY")}</Text>
         <Text><Text style={styles.label}>Trạng thái: </Text>{classInfo.status}</Text>
         <Text><Text style={styles.label}>Số sinh viên: </Text>{classInfo.student_count}</Text>
       </View>

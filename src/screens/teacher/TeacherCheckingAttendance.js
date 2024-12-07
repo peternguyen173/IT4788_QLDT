@@ -6,27 +6,72 @@ import {
   FlatList, 
   ActivityIndicator, 
   TouchableOpacity, 
-  Alert, 
-  Switch 
+  Alert,
+  TouchableWithoutFeedback 
 } from 'react-native';
 import axios from 'axios';
 import { useAuth } from '../../navigators/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 
+const AttendanceToggle = ({ status, onToggle }) => {
+  const getStatusColor = () => {
+    switch(status) {
+      case 'PRESENT': return '#4CAF50'; // Green
+      case 'EXCUSED_ABSENCE': return '#FFC107'; // Amber
+      case 'UNEXCUSED_ABSENCE': return '#F44336'; // Red
+      default: return '#9E9E9E'; // Grey
+    }
+  };
+
+  const getNextStatus = () => {
+    switch(status) {
+      case 'PRESENT': return 'EXCUSED_ABSENCE';
+      case 'EXCUSED_ABSENCE': return 'UNEXCUSED_ABSENCE';
+      case 'UNEXCUSED_ABSENCE': return 'PRESENT';
+      default: return 'PRESENT';
+    }
+  };
+
+  const getStatusLabel = () => {
+    switch(status) {
+      case 'PRESENT': return 'Có mặt';
+      case 'EXCUSED_ABSENCE': return 'Vắng có phép';
+      case 'UNEXCUSED_ABSENCE': return 'Vắng không phép';
+      default: return 'Chưa xác định';
+    }
+  };
+
+  return (
+    <TouchableWithoutFeedback onPress={onToggle}>
+      <View style={[styles.toggleContainer, { backgroundColor: getStatusColor() }]}>
+        <Text style={styles.toggleText}>{getStatusLabel()}</Text>
+      </View>
+    </TouchableWithoutFeedback>
+  );
+};
+
 const TeacherCheckingAttendance = ({ route }) => {
-  const { classId } = route.params; // Nhận classId từ route params
+  const { classId } = route.params;
   const [students, setStudents] = useState([]);
+  const [numberOfStudents, setNumberOfStudents] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [attendanceList, setAttendanceList] = useState([]);
+  const [attendanceStatus, setAttendanceStatus] = useState({});
+  const [attendanceIds, setAttendanceIds] = useState({});
   const { userData, logout } = useAuth();
   const navigation = useNavigation();
-  const currentDate = moment().format('YYYY-MM-DD'); // Lấy ngày hiện tại
+  const currentDate = moment().format('YYYY-MM-DD');
 
   // Fetch dữ liệu sinh viên từ API
   useEffect(() => {
     fetchClassInfo();
   }, [classId]);
+
+  useEffect(() => {
+    if (numberOfStudents > 0) {
+      fetchAttendanceList();
+    }
+  }, [numberOfStudents]);
 
   const fetchClassInfo = async () => {
     try {
@@ -34,10 +79,10 @@ const TeacherCheckingAttendance = ({ route }) => {
       const response = await axios.post(
         'http://157.66.24.126:8080/it5023e/get_class_info',
         {
-          class_id: classId,
           token: userData.token,
           role: userData.role,
           account_id: userData.id,
+          class_id: classId,
         },
         {
           headers: {
@@ -45,9 +90,18 @@ const TeacherCheckingAttendance = ({ route }) => {
           },
         }
       );
-      console.log(response.data);
+
       if (response.data && response.data.data) {
-        setStudents(response.data.data.student_accounts); // Lấy danh sách sinh viên
+        const studentList = response.data.data.student_accounts;
+        setStudents(studentList);
+        setNumberOfStudents(studentList.length);
+        
+        // Initialize attendance status cho từng sv
+        const initialStatus = {};
+        studentList.forEach(student => {
+          initialStatus[student.student_id] = 'PRESENT';
+        });
+        setAttendanceStatus(initialStatus);
       }
     } catch (error) {
       console.error(error);
@@ -64,25 +118,18 @@ const TeacherCheckingAttendance = ({ route }) => {
     }
   };
 
-  const toggleAttendance = (studentId) => {
-    setAttendanceList(prevList => {
-      if (prevList.includes(studentId)) {
-        return prevList.filter(id => id !== studentId); // Nếu đã có trong danh sách, bỏ đi
-      } else {
-        return [...prevList, studentId]; // Nếu chưa có, thêm vào danh sách
-      }
-    });
-  };
-
-  const handleSubmit = async () => {
+  const fetchAttendanceList = async () => {
     try {
       const response = await axios.post(
-        'http://157.66.24.126:8080/it5023e/take_attendance',
+        'http://157.66.24.126:8080/it5023e/get_attendance_list',
         {
           token: userData.token,
           class_id: classId,
-          date: currentDate, // Ngày điểm danh
-          attendance_list: attendanceList, // Danh sách sinh viên vắng
+          date: currentDate,
+          pageable_request: {
+            page: "0",
+            page_size: numberOfStudents,
+          }
         },
         {
           headers: {
@@ -90,9 +137,104 @@ const TeacherCheckingAttendance = ({ route }) => {
           },
         }
       );
+      console.log("Goi danh sach diem danh");
+      console.log(response.data.data.attendance_student_details);
+
+      if (response.data && response.data.data && response.data.data.attendance_student_details && response.data.data.attendance_student_details.length > 0) {
+        // Nếu đã điểm danh trước đó, cập nhật DS điểm danh
+        const existingAttendance = {};
+        const existingAttendanceIds = {};
+        
+        response.data.data.attendance_student_details.forEach(attendance => {
+          existingAttendance[attendance.student_id] = attendance.status;
+          existingAttendanceIds[attendance.student_id] = attendance.attendance_id;
+        });
+        
+        setAttendanceStatus(existingAttendance);
+        setAttendanceIds(existingAttendanceIds);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const toggleAttendanceStatus = (studentId) => {
+    setAttendanceStatus(prev => {
+      const currentStatus = prev[studentId];
+      let newStatus;
+      
+      switch(currentStatus) {
+        case 'PRESENT': 
+          newStatus = 'EXCUSED_ABSENCE';
+          break;
+        case 'EXCUSED_ABSENCE':
+          newStatus = 'UNEXCUSED_ABSENCE';
+          break;
+        case 'UNEXCUSED_ABSENCE':
+          newStatus = 'PRESENT';
+          break;
+        default:
+          newStatus = 'PRESENT';
+      }
+      
+      return {
+        ...prev,
+        [studentId]: newStatus
+      };
+    });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      // Danh sách sinh viên vắng không phép
+      const unexcusedAbsenceList = Object.keys(attendanceStatus)
+        .filter(studentId => attendanceStatus[studentId] === 'UNEXCUSED_ABSENCE');
+
+      // Danh sách sinh viên vắng có phép
+      const excusedAbsenceList = Object.keys(attendanceStatus)
+        .filter(studentId => attendanceStatus[studentId] === 'EXCUSED_ABSENCE');
+
+      // Gọi API take_attendance cho sinh viên vắng không phép
+      await axios.post(
+        'http://157.66.24.126:8080/it5023e/take_attendance',
+        {
+          token: userData.token,
+          class_id: classId,
+          date: currentDate,
+          attendance_list: unexcusedAbsenceList,
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${userData.token}`,
+          },
+        }
+      );
+
+      // Gọi API set_attendance_status cho sinh viên vắng có phép
+      for (const studentId of excusedAbsenceList) {
+        const attendanceId = attendanceIds[studentId];
+        const calculatedAttendanceId = parseInt(attendanceId, 10) + numberOfStudents;
+        if (attendanceId) {
+          const response = await axios.post(
+            'http://157.66.24.126:8080/it5023e/set_attendance_status',
+            {
+              token: userData.token,
+              status: 'EXCUSED_ABSENCE',
+              attendance_id: calculatedAttendanceId,
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${userData.token}`,
+              },
+            }
+          );
+          console.log(response.data);
+        }
+        
+      }
+
       Alert.alert('Điểm danh', 'Điểm danh thành công!');
-      console.log(response.data);
-      navigation.goBack(); // Quay lại màn hình trước đó (TeacherClassInfo)
+      navigation.goBack();
     } catch (error) {
       console.error(error);
       Alert.alert('Lỗi', 'Không thể điểm danh. Vui lòng thử lại sau.');
@@ -118,25 +260,28 @@ const TeacherCheckingAttendance = ({ route }) => {
   }
 
   // Render mỗi sinh viên
-  const renderStudent = ({ item }) => (
-    <View style={styles.studentContainer}>
-      <View style={styles.studentInfoContainer}>
-        <Text style={styles.studentName}>{item.first_name} {item.last_name}</Text>
-        <Text style={styles.studentEmail}>{item.email}</Text>
+  const renderStudent = ({ item }) => {
+    const status = attendanceStatus[item.student_id];
+    
+    return (
+      <View style={styles.studentContainer}>
+        <View style={styles.studentInfoContainer}>
+          <Text style={styles.studentName}>{item.first_name} {item.last_name}</Text>
+          <Text style={styles.studentEmail}>{item.email}</Text>
+        </View>
+        <View style={styles.attendanceContainer}>
+          <AttendanceToggle 
+            status={status} 
+            onToggle={() => toggleAttendanceStatus(item.student_id)}
+          />
+        </View>
       </View>
-      <View style={styles.attendanceContainer}>
-        <Text style={styles.checkboxLabel}>Vắng?</Text>
-        <Switch
-          value={attendanceList.includes(item.student_id)} // Kiểm tra sinh viên đã có trong danh sách điểm danh chưa
-          onValueChange={() => toggleAttendance(item.student_id)} // Cập nhật trạng thái khi thay đổi
-        />
-      </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Ngày điểm danh: {currentDate}</Text>
+      <Text style={styles.header}>Điểm danh: {moment(currentDate).format('DD/MM/YYYY')}</Text>
 
       <FlatList
         data={students}
@@ -145,7 +290,7 @@ const TeacherCheckingAttendance = ({ route }) => {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Điểm danh</Text>
+        <Text style={styles.buttonText}>Lưu điểm danh</Text>
       </TouchableOpacity>
     </View>
   );
@@ -155,13 +300,14 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     flex: 1,
-    backgroundColor: '#f4f4f4', // Thêm màu nền cho đẹp
+    backgroundColor: '#f4f4f4',
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333', // Màu chữ đẹp hơn
+    color: '#333',
+    textAlign: 'center',
   },
   studentContainer: {
     marginVertical: 10,
@@ -169,18 +315,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    backgroundColor: '#fff', // Màu nền sáng hơn cho mỗi student
+    backgroundColor: '#fff',
     shadowColor: '#000', 
     shadowOffset: { width: 0, height: 2 }, 
     shadowOpacity: 0.1, 
     shadowRadius: 5, 
-    elevation: 3, // Tạo hiệu ứng shadow
-    flexDirection: 'row', // Để các phần tử nằm ngang
-    justifyContent: 'space-between', // Căn giữa các phần tử
+    elevation: 3,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   studentInfoContainer: {
-    flex: 1, // Để phần thông tin sinh viên chiếm không gian còn lại
+    flex: 1,
+    marginRight: 10,
   },
   studentName: {
     fontSize: 18,
@@ -189,16 +336,20 @@ const styles = StyleSheet.create({
   studentEmail: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 10,
   },
   attendanceContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
   },
-  checkboxLabel: {
-    marginRight: 10,
-    fontSize: 16,
-    color: '#333',
+  toggleContainer: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  toggleText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   button: {
     backgroundColor: '#4CAF50',
