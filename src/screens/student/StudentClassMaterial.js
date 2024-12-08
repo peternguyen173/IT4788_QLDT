@@ -100,39 +100,55 @@ const StudentClassMaterial = ({ route }) => {
         animationType="slide"
         transparent={true}
         onRequestClose={() => setIsDetailModalVisible(false)}
+        style={styles.fullScreenModal}
       >
         {currentMaterial && (
-          <View style={styles.modalContainer}>
+          <View style={styles.fullScreenModalContainer}>
             <TouchableOpacity 
               style={styles.closeModalButton} 
               onPress={() => setIsDetailModalVisible(false)}
             >
               <Icon name="close" size={24} color="black" />
             </TouchableOpacity>
+
             <Text style={styles.modalTitle}>Chi tiết tài liệu</Text>
             <View style={styles.detailContainer}>
-              <Text style={styles.detailLabel}>Tên tài liệu:</Text>
-              <Text style={styles.detailText}>{currentMaterial.material_name}</Text>
-              <Text style={styles.detailLabel}>Mô tả:</Text>
-              <Text style={styles.detailText}>
-                {currentMaterial.description || 'Không có mô tả'}
-              </Text>
-              <Text style={styles.detailLabel}>Loại tài liệu:</Text>
-              <Text style={styles.detailText}>{currentMaterial.material_type}</Text>
-              <Text style={styles.detailLabel}>Link tài liệu:</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  Linking.canOpenURL(currentMaterial.material_link).then((supported) => {
-                    if (supported) {
-                      Linking.openURL(currentMaterial.material_link);
-                    } else {
-                      Alert.alert('Lỗi', 'Không thể mở liên kết này');
-                    }
-                  });
-                }}
-              >
-                <Text style={styles.linkText}>{currentMaterial.material_link || 'Không có link'}</Text>
-              </TouchableOpacity>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Tên tài liệu:</Text>
+                <Text style={styles.detailText}>{currentMaterial.material_name}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Mô tả:</Text>
+                <Text style={styles.detailText}>
+                  {currentMaterial.description || 'Không có mô tả'}
+                </Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Loại tài liệu:</Text>
+                <Text style={styles.detailText}>{currentMaterial.material_type}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Link tài liệu:</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    Linking.canOpenURL(currentMaterial.material_link).then((supported) => {
+                      if (supported) {
+                        Linking.openURL(currentMaterial.material_link);
+                      } else {
+                        Alert.alert('Lỗi', 'Không thể mở liên kết này');
+                      }
+                    });
+                  }}
+                >
+                  <Text
+                    style={[styles.detailText, styles.linkText]}
+                    numberOfLines={1}
+                    ellipsizeMode="start"
+                  >
+                    {currentMaterial.material_link || 'Không có link'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         )}
@@ -152,13 +168,17 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 5,
     borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  materialItemContent: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   materialTitle: {
     fontSize: 16,
@@ -168,11 +188,21 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 14,
   },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+  fullScreenModal: {
+    margin: 0,
+  },
+  fullScreenModalContainer: {
+    flex: 0,
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 15,
+    margin: 50,
+    maxHeight: 800,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   closeModalButton: {
     position: 'absolute',
@@ -181,23 +211,30 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
+    color: '#333',
   },
   detailContainer: {
-    marginVertical: 10,
-    marginBottom: 10,
-    alignItems: 'center',
+    marginTop: 10,
+    paddingHorizontal: 10,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+    alignItems: 'flex-start',
   },
   detailLabel: {
     fontWeight: 'bold',
     marginRight: 10,
-    width: 100,
+    width: 120,
+    color: '#555',
   },
   detailText: {
     flex: 1,
+    color: '#333',
   },
   linkText: {
     color: 'blue',
