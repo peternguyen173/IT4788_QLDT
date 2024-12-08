@@ -6,27 +6,44 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
-  Alert
+  Alert,
+  Modal,
+  Platform
 } from 'react-native';
 import moment from 'moment';
 import axios from 'axios';
 import { useAuth } from '../../navigators/AuthProvider';
 import Icon from 'react-native-vector-icons/Ionicons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const TeacherClassList = ({ navigation }) => {
   const [classes, setClasses] = useState([]);
+  const [filteredClasses, setFilteredClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
   const { userData, logout } = useAuth();
+
+  // State cho các filter
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [classTypeFilter, setClassTypeFilter] = useState('ALL');
+  const [startDateFilter, setStartDateFilter] = useState(null);
+  const [endDateFilter, setEndDateFilter] = useState(null);
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
   useEffect(() => {
     fetchClasses();
   }, []);
 
+  useEffect(() => {
+    applyFilters();
+  }, [classes, statusFilter, classTypeFilter, startDateFilter, endDateFilter]);
+
   const fetchClasses = async () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://157.66.24.126:8080/it5023e/get_class_list', // Endpoint có thể khác
+        'http://157.66.24.126:8080/it5023e/get_class_list',
           {
             token: userData.token,
             role: 'LECTURER',
@@ -57,6 +74,49 @@ const TeacherClassList = ({ navigation }) => {
       setLoading(false);
     }
   };
+
+  const applyFilters = () => {
+    let result = [...classes];
+    if (startDateFilter && endDateFilter && moment(startDateFilter).isAfter(endDateFilter)) {
+      Alert.alert("Lỗi", "Ngày bắt đầu không thể sau ngày kết thúc!");
+      setEndDateFilter = null;
+      return;
+    }
+
+    // Filter theo status
+    if (statusFilter !== 'ALL') {
+      result = result.filter(cls => cls.status === statusFilter);
+    }
+
+    // Filter theo loại lớp
+    if (classTypeFilter !== 'ALL') {
+      result = result.filter(cls => cls.class_type === classTypeFilter);
+    }
+
+    // Filter theo ngày bắt đầu (các lớp từ startDate trở về sau)
+    if (startDateFilter) {
+      result = result.filter(cls =>
+        moment(cls.start_date).isSameOrAfter(startDateFilter, 'day')
+      );
+    }
+
+    // Filter theo ngày kết thúc (các lớp từ endDate trở về trước)
+    if (endDateFilter) {
+      result = result.filter(cls =>
+        moment(cls.end_date).isSameOrBefore(endDateFilter, 'day')
+      );
+    }
+
+    setFilteredClasses(result);
+  };
+
+  const resetFilters = () => {
+    setStatusFilter('ALL');
+    setClassTypeFilter('ALL');
+    setStartDateFilter(null);
+    setEndDateFilter(null);
+  };
+
 
   const renderClassItem = ({ item }) => {
     const isActive = item.status === 'ACTIVE';
@@ -106,13 +166,150 @@ const TeacherClassList = ({ navigation }) => {
     );
   };
 
+  const renderFilterModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={filterModalVisible}
+      onRequestClose={() => setFilterModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Lọc lớp học</Text>
+
+          {/* Status Filter */}
+          <View style={styles.filterSection}>
+            <Text style={styles.filterLabel}>Trạng thái</Text>
+            <View style={styles.radioContainer}>
+              {['ALL', 'COMPLETED', 'ACTIVE', 'UPCOMING'].map(status => (
+                <TouchableOpacity
+                  key={status}
+                  style={[
+                    styles.radioButton,
+                    statusFilter === status && styles.radioButtonSelected
+                  ]}
+                  onPress={() => setStatusFilter(status)}
+                >
+                  <Text style={styles.radioText}>{status}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Class Type Filter */}
+          <View style={styles.filterSection}>
+            <Text style={styles.filterLabel}>Loại lớp</Text>
+            <View style={styles.radioContainer}>
+              {['ALL', 'LT', 'BT', 'LT_BT'].map(classType => (
+                <TouchableOpacity
+                  key={classType}
+                  style={[
+                    styles.radioButton,
+                    classTypeFilter === classType && styles.radioButtonSelected
+                  ]}
+                  onPress={() => setClassTypeFilter(classType)}
+                >
+                  <Text style={styles.radioText}>{classType}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Start Date Filter */}
+          <View style={styles.filterSection}>
+            <Text style={styles.filterLabel}>Ngày bắt đầu</Text>
+            <TouchableOpacity
+              style={styles.datePicker}
+              onPress={() => setShowStartDatePicker(true)}
+            >
+              <Text>
+                {startDateFilter
+                  ? moment(startDateFilter).format('DD/MM/YYYY')
+                  : 'Chọn ngày'}
+              </Text>
+            </TouchableOpacity>
+
+            {showStartDatePicker && (
+              <DateTimePicker
+                value={startDateFilter || new Date()}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={(event, selectedDate) => {
+                  const currentDate = selectedDate || startDateFilter;
+                  setShowStartDatePicker(Platform.OS === 'ios');
+                  setStartDateFilter(currentDate);
+                }}
+              />
+            )}
+          </View>
+
+          {/* End Date Filter */}
+          <View style={styles.filterSection}>
+            <Text style={styles.filterLabel}>Ngày kết thúc</Text>
+            <TouchableOpacity
+              style={styles.datePicker}
+              onPress={() => setShowEndDatePicker(true)}
+            >
+              <Text>
+                {endDateFilter
+                  ? moment(endDateFilter).format('DD/MM/YYYY')
+                  : 'Chọn ngày'}
+              </Text>
+            </TouchableOpacity>
+
+            {showEndDatePicker && (
+              <DateTimePicker
+                value={endDateFilter || new Date()}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={(event, selectedDate) => {
+                  const currentDate = selectedDate || endDateFilter;
+                  setShowEndDatePicker(Platform.OS === 'ios');
+                  setEndDateFilter(currentDate);
+                }}
+              />
+            )}
+          </View>
+
+          {/* Modal Buttons */}
+          <View style={styles.modalButtonContainer}>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.resetButton]}
+              onPress={resetFilters}
+            >
+              <Text style={styles.modalButtonText}>Đặt lại</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.applyButton]}
+              onPress={() => setFilterModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Áp dụng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.filterButton}
+        onPress={() => setFilterModalVisible(true)}
+      >
+        <Icon name="filter" size={24} color="#fff" />
+        <Text style={styles.filterButtonText}>Lọc lớp</Text>
+      </TouchableOpacity>
+
+      {renderFilterModal()}
+
       {loading ? (
         <ActivityIndicator size="large" color="#d32f2f" style={styles.loader} />
       ) : (
         <FlatList
-          data={classes}
+          data={filteredClasses}
           renderItem={renderClassItem}
           keyExtractor={(item) => item.class_id}
           contentContainerStyle={styles.listContainer}
@@ -191,6 +388,104 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
   },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    padding: 10,
+    margin: 10,
+    borderRadius: 8,
+  },
+  filterButtonText: {
+    color: '#fff',
+    marginLeft: 8,
+    fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  filterSection: {
+    width: '100%',
+    marginBottom: 15,
+  },
+  filterLabel: {
+    marginBottom: 8,
+    fontWeight: 'bold',
+  },
+  radioContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginVertical: 8,
+  },
+  radioButton: {
+    paddingHorizontal: 15, // Thêm padding để nút dễ bấm
+    paddingVertical: 10,
+    marginHorizontal: 5, // Khoảng cách giữa các nút theo chiều ngang
+    marginVertical: 5, // Khoảng cách giữa các nút theo chiều dọc
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8, // Bo góc để đẹp hơn
+    backgroundColor: '#fff',
+  },
+  radioButtonSelected: {
+    backgroundColor: '#d32f2f',
+  },
+  radioText: {
+    color: '#000',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+  },
+  datePicker: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    alignItems: 'center',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+  },
+  modalButton: {
+    flex: 1,
+    padding: 12,
+    alignItems: 'center',
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  resetButton: {
+    backgroundColor: '#ccc',
+  },
+  applyButton: {
+    backgroundColor: '#d32f2f',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  }
 });
 
 export default TeacherClassList;
