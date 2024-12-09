@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import * as DocumentPicker from 'expo-document-picker';
@@ -14,13 +14,14 @@ const validationSchema = Yup.object().shape({
   file: Yup.mixed().required('Proof file is required'),
 });
 
-const RequestAbsence = ({ navigation,route }) => {
+const RequestAbsence = ({ navigation, route }) => {
   console.log(route.params)
-  
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { userData } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   console.log('User data:', userData);
   console.log('Token:', userData.token);
   const handleFileSelect = async (setFieldValue) => {
@@ -59,6 +60,8 @@ const RequestAbsence = ({ navigation,route }) => {
     formData.append('date', formatDate(values.date));
     formData.append('reason', values.reason);
 
+
+
     // Checking if a file was selected
     if (values.file) {
       const file = values.file;  // Using the file from Formik's state
@@ -72,6 +75,8 @@ const RequestAbsence = ({ navigation,route }) => {
 
     console.log('Form data:', formData);
 
+    setIsLoading(true);
+
     try {
       const response = await axios.post('http://157.66.24.126:8080/it5023e/request_absence', formData, {
         headers: {
@@ -83,7 +88,13 @@ const RequestAbsence = ({ navigation,route }) => {
 
       if (response.status === 200) {
         console.log('Form submitted successfully');
-        alert('Form submitted successfully');
+        
+        alert('Form submitted successfully',[
+          {
+            text: 'OK',
+            onPress: ()=> navigation.goBack()
+          }
+        ]);
       } else {
         console.error('Form submission failed');
         alert('Form submission failed');
@@ -91,6 +102,8 @@ const RequestAbsence = ({ navigation,route }) => {
     } catch (error) {
       console.error('Error submitting form:', error.response ? error.response.data : error.message);
       alert(error.response ? error.response.data.message : 'Error submitting form');
+    } finally {
+      setIsLoading(false);
     }
 
   }
@@ -103,8 +116,13 @@ const RequestAbsence = ({ navigation,route }) => {
   return (
     <>
 
+      {isLoading && (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="red" />
+        </View>
+      )}
 
-      <Formik
+      {!isLoading && (<Formik
         initialValues={{ title: '', reason: '', date: null, file: null }}
         validationSchema={validationSchema}
         onSubmit={handleSubmitForm}
@@ -114,7 +132,7 @@ const RequestAbsence = ({ navigation,route }) => {
           <View style={{ padding: 20 }}>
             <Text style={{ marginBottom: 10 }}>Bạn cần điền đơn này đơn xin phép nghỉ học lớp học này </Text>
             {/* Title Field */}
-            <Text style={{marginBottom:10}}>Bạn đang xin nghi cho lớp {route.params.className} với mã lớp {route.params.classId}</Text>
+            <Text style={{ marginBottom: 10 }}>Bạn đang xin nghi cho lớp {route.params.className} với mã lớp {route.params.classId}</Text>
             <Text>Title</Text>
             <TextInput
               placeholder="Enter the title"
@@ -185,11 +203,11 @@ const RequestAbsence = ({ navigation,route }) => {
           </View>
         )}
       </Formik>
-
+      )}
       <TouchableOpacity
         onPress={() => navigation.navigate('HistoryReqAbsence', { classId: route.params.classId })}
       >
-        <Text style={{padding:20, }}>Xem danh sách xin nghỉ học của bạn </Text>
+        <Text style={{ padding: 20, }}>Xem danh sách xin nghỉ học của bạn </Text>
       </TouchableOpacity>
     </>
   );
