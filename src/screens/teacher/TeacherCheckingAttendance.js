@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  FlatList, 
-  ActivityIndicator, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
   Alert,
   TouchableWithoutFeedback
 } from 'react-native';
@@ -13,10 +13,11 @@ import axios from 'axios';
 import { useAuth } from '../../navigators/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
+import { sendNotification } from '../../utils/sendNotification';
 
 const AttendanceToggle = ({ status, onToggle }) => {
   const getStatusColor = () => {
-    switch(status) {
+    switch (status) {
       case 'PRESENT': return '#4CAF50'; // Green
       case 'EXCUSED_ABSENCE': return '#FFC107'; // Amber
       case 'UNEXCUSED_ABSENCE': return '#F44336'; // Red
@@ -25,7 +26,7 @@ const AttendanceToggle = ({ status, onToggle }) => {
   };
 
   const getNextStatus = () => {
-    switch(status) {
+    switch (status) {
       case 'PRESENT': return 'EXCUSED_ABSENCE';
       case 'EXCUSED_ABSENCE': return 'UNEXCUSED_ABSENCE';
       case 'UNEXCUSED_ABSENCE': return 'PRESENT';
@@ -34,7 +35,7 @@ const AttendanceToggle = ({ status, onToggle }) => {
   };
 
   const getStatusLabel = () => {
-    switch(status) {
+    switch (status) {
       case 'PRESENT': return 'Có mặt';
       case 'EXCUSED_ABSENCE': return 'Vắng có phép';
       case 'UNEXCUSED_ABSENCE': return 'Vắng không phép';
@@ -95,7 +96,7 @@ const TeacherCheckingAttendance = ({ route }) => {
         const studentList = response.data.data.student_accounts;
         setStudents(studentList);
         setNumberOfStudents(studentList.length);
-
+        
         // Initialize attendance status cho từng sv
         const initialStatus = {};
         studentList.forEach(student => {
@@ -157,6 +158,7 @@ const TeacherCheckingAttendance = ({ route }) => {
 
         setAttendanceStatus(existingAttendance);
         setAttendanceIds(existingAttendanceIds);
+
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -170,7 +172,7 @@ const TeacherCheckingAttendance = ({ route }) => {
       const currentStatus = prev[studentId];
       let newStatus;
 
-      switch(currentStatus) {
+      switch (currentStatus) {
         case 'PRESENT':
           newStatus = 'EXCUSED_ABSENCE';
           break;
@@ -196,8 +198,12 @@ const TeacherCheckingAttendance = ({ route }) => {
       // Danh sách sinh viên vắng không phép
       const unexcusedAbsenceList = Object.keys(attendanceStatus)
         .filter(studentId => attendanceStatus[studentId] === 'UNEXCUSED_ABSENCE');
+      console.log("Danh sách vắng không phép: ", unexcusedAbsenceList);
+      const unexcusedAccountIds = students.filter(student => unexcusedAbsenceList.includes(student.student_id))
+        .map(student => student.account_id);
+      console.log("Danh sách account id vắng không phép: ", unexcusedAccountIds);
 
-      // Danh sách sinh viên vắng có phép
+      // Danh sách sinh viên vắng cósphép
       const excusedAbsenceList = Object.keys(attendanceStatus)
         .filter(studentId => attendanceStatus[studentId] === 'EXCUSED_ABSENCE');
 
@@ -238,7 +244,7 @@ const TeacherCheckingAttendance = ({ route }) => {
       // Cập nhật lại attendanceIds
       const updatedAttendanceIds = {};
       if (attendanceListResponse.data && attendanceListResponse.data.data &&
-          attendanceListResponse.data.data.attendance_student_details) {
+        attendanceListResponse.data.data.attendance_student_details) {
         attendanceListResponse.data.data.attendance_student_details.forEach(attendance => {
           updatedAttendanceIds[attendance.student_id] = attendance.attendance_id;
         });
@@ -263,6 +269,11 @@ const TeacherCheckingAttendance = ({ route }) => {
           );
           console.log(response.data);
         }
+      } 
+
+      //gửi thông báo cho các bạn vắng không phép
+      for(const accountId of unexcusedAccountIds){
+        await sendNotification(userData.token,`Bạn đã bị điểm danh vắng không phép lớp ${classId}`,accountId, "ABSENCE");
       }
 
       Alert.alert('Điểm danh', 'Điểm danh thành công!');

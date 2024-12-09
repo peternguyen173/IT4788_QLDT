@@ -8,7 +8,7 @@ const DetailNotification = ({ route }) => {
     const { itemNotifications } = route.params;
     const { userData } = useAuth();
     const [teacher, setTeacher] = useState([]);
-
+    console.log(userData)
 
 
     const [
@@ -20,6 +20,10 @@ const DetailNotification = ({ route }) => {
         message,
         type,
     ] = itemNotifications;
+
+
+
+    // const getClassInfo = async (classId) => {}
 
     const getTeacherFromId = async (id) => {
         try {
@@ -59,14 +63,14 @@ const DetailNotification = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Notification Details</Text>
+            <Text style={styles.title}>Chi tiết thông báo</Text>
             <Text style={styles.detail}>ID: {id}</Text>
-            <Text style={styles.detail}>Status: {status}</Text>
-            <Text style={styles.detail}>From User: {from_user}</Text>
-            <Text style={styles.detail}>To User: {to_user}</Text>
-            <Text style={styles.detail}>Sent Time: {sent_time}</Text>
-            <Text style={styles.detail}>Message: {message}</Text>
-            <Text style={styles.detail}>Type: {type}</Text>
+            <Text style={styles.detail}>Trạng thái: {status}</Text>
+            <Text style={styles.detail}>Gửi từ giáo viên: {from_user}</Text>
+            <Text style={styles.detail}>Gửi đến sinh viên: {userData.name}</Text>
+            <Text style={styles.detail}>Giờ gửi: {sent_time}</Text>
+            <Text style={styles.detail}>Nội dung thông báo: {message}</Text>
+            <Text style={styles.detail}>Kiểu thông báo: {type}</Text>
         </View>
     );
 };
