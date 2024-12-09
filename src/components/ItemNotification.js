@@ -13,9 +13,12 @@ const ItemNotification = ({
     message,
     type,
     onToggleSelect,
-    isSelected
+    isSelected,
+ 
 }) => {
+    const itemNotifications = [id, status, from_user, to_user, sent_time, message, type];
     const { userData } = useAuth();
+    
     const navigation = useNavigation();
     const mark_notifications_as_read = async (id) => {
 
@@ -43,7 +46,7 @@ const ItemNotification = ({
         }
     }
     const handlePressDetail = async () => {
-        navigation.navigate('DetailNotification');
+        navigation.navigate('DetailNotification', { itemNotifications: itemNotifications });
         await mark_notifications_as_read(id);
         
     }

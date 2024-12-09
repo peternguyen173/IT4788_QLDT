@@ -4,8 +4,7 @@ import { useAuth } from "../../navigators/AuthProvider";
 import { sendNotification } from "../../utils/sendNotification";
 
 const TeacherCheckingAbsence = ({ route }) => {
-  const { classId,className } = route.params;
-  console.log(className)
+  const { classId,classInfo } = route.params;
   const { userData } = useAuth();
   const [listAbsence, setListAbsence] = useState([]);
   
@@ -30,7 +29,6 @@ const TeacherCheckingAbsence = ({ route }) => {
       if (response.status === 200) {
         const data = await response.json();
         setListAbsence(data.data.page_content);
-        console.log(data.data.page_content);
       }
     } catch (error) {
       console.error(error);
@@ -55,9 +53,9 @@ const TeacherCheckingAbsence = ({ route }) => {
       if (response.status === 200) {
         Alert.alert("Thành công", `Trạng thái đã được cập nhật thành ${newStatus}`);
         if(newStatus === "ACCEPTED"){
-          await sendNotification(userData.token,`Đơn xin nghỉ học lớp ${className} đã được cập nhật`,toUser, "ACCEPT_ABSENCE_REQUEST");
+          await sendNotification(userData.token,`Đơn xin nghỉ học lớp ${classInfo.class_name} đã được cập nhật`,toUser, "ACCEPT_ABSENCE_REQUEST");
         }else {
-          await sendNotification(userData.token,`Đơn xin nghỉ học lớp ${className} đã được cập nhật`,toUser, "REJECT_ABSENCE_REQUEST");
+          await sendNotification(userData.token,`Đơn xin nghỉ học lớp ${classInfo.class_name} đã được cập nhật`,toUser, "REJECT_ABSENCE_REQUEST");
         }
         fetchListAbsence(); // Cập nhật lại danh sách
       } else {

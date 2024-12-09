@@ -43,7 +43,7 @@ const TeacherClassInfo = ({ route }) => {
   const menuItems = [
 
     { title: 'Thêm sinh viên', icon: 'person-add-outline', onPress: () => navigation.navigate('AddStudent', { classId }) },
-    { title: 'Danh sách nghỉ học', icon: 'people-outline', onPress: () => navigation.navigate('TeacherCheckingAbsence', { classId }) },
+    { title: 'Danh sách nghỉ học', icon: 'people-outline', onPress: () => navigation.navigate('TeacherCheckingAbsence', { classId, classInfo:classInfo }) },
     { title: 'Chỉnh sửa', icon: 'settings-outline', onPress: () => navigation.navigate('EditClass', { classId }) },
     { title: 'Tài liệu lớp học', icon: 'document-text-outline', onPress: () => navigation.navigate('TeacherClassMaterial', { classId }) }
 
@@ -70,7 +70,7 @@ const TeacherClassInfo = ({ route }) => {
           },
         }
       );
-      setClassInfo(response.data.data); // Set dữ liệu lớp vào state
+      setClassInfo(response.data.data); // Set dữ liệu lớp vào state 
     } catch (error) {
       console.error(error);
       if (error.response && error.response.status === 401) {

@@ -14,8 +14,7 @@ const Notifications = () => {
     // const [unreadNotifications, setUnreadNotifications] = useState(0);
     // const [selectedNotification, setSelectedNotification] = useState();
     const [refreshing, setRefreshing] = useState(false); // Thêm trạng thái làm mới
-
-
+  
     const get_notifications = async () => {
         try {
             const response = await fetch('http://157.66.24.126:8080/it5023e/get_notifications', {

@@ -168,7 +168,7 @@ const RequestAbsence = ({ navigation,route }) => {
             <View style={{ borderRadius: 20 }}>
               <TouchableOpacity title="Select File"
                 onPress={() => handleFileSelect(setFieldValue)} color={'red'} style={{ borderRadius: 10, backgroundColor: 'red', padding: 10, alignItems: 'center', marginTop: 10 }}>
-                <Text style={{ color: 'white', fontSize: 16 }} >Chon anh minh chung</Text>
+                <Text style={{ color: 'white', fontSize: 16 }} >Chọn ảnh minh chứng</Text>
               </TouchableOpacity>
             </View>
             {selectedFile && <Text style={{ marginTop: 5 }}>Selected File: {selectedFile.name || selectedFile.uri}</Text>}
@@ -189,7 +189,7 @@ const RequestAbsence = ({ navigation,route }) => {
       <TouchableOpacity
         onPress={() => navigation.navigate('HistoryReqAbsence', { classId: route.params.classId })}
       >
-        <Text >Danh xin nghi cua ban</Text>
+        <Text style={{padding:20, }}>Xem danh sách xin nghỉ học của bạn </Text>
       </TouchableOpacity>
     </>
   );

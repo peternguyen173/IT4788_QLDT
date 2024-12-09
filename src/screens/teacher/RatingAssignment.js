@@ -13,12 +13,14 @@ import {
 import axios from "axios";
 import { useAuth } from "../../navigators/AuthProvider";
 import { useNavigation } from "@react-navigation/native";
-
+import { sendNotification } from "../../utils/sendNotification";
 const RatingAssignment = ({ navigation, route }) => {
   const { item, title } = route.params;
   const { userData, logout } = useAuth();
   const [score, setScore] = useState();
   const [loading, setLoading] = useState(false);
+  console.log("Item", item);
+  console.log("Title", title);
 
   function formatDate(dateString) {
     // Chuyển chuỗi thành đối tượng Date
@@ -59,6 +61,8 @@ const RatingAssignment = ({ navigation, route }) => {
       );
       const { code } = response.data.meta || {};
       if (code == "1000") {
+        // Gửi thông báo đến người dùng
+        sendNotification(userData.token, "Đã chấm điểm bài tập", item.student_account.account_id, "ASSIGNMENT_GRADE");
         Alert.alert("Chấm điểm thành công", "", [
           {
             text: "OK",
