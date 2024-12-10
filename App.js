@@ -25,6 +25,10 @@ import CreateClass from "./src/screens/teacher/CreateClass";
 import Assignments from "./src/screens/teacher/Assignments";
 import EditClass from "./src/screens/teacher/EditClass";
 import ErrorScreen from "./src/screens/ErrorScreen";
+HomeWork from './src/screens/teacher/HomeWork';
+
+
+=======
 import ChatScreen from "./src/screens/student/ChatScreen";
 import ConversationScreen from "./src/screens/student/ConversationScreen";
 import NewConversationScreen from "./src/screens/student/NewConversationScreen";
@@ -169,6 +173,7 @@ function AppNavigator() {
           <Stack.Screen name="StudentClassMaterial">
               {props => <MainLayout title="Tài liệu lớp học" showBackButton={true} navigation={props.navigation}><StudentClassMaterial {...props} /></MainLayout>}
           </Stack.Screen>
+
             </Stack.Screen>
             <Stack.Screen name="ChatScreen">
               {props => <MainLayout title="Tin nhắn" showBackButton={true} navigation={props.navigation}><ChatScreen {...props} /></MainLayout>}
@@ -197,6 +202,7 @@ function AppNavigator() {
             <Stack.Screen name="Assignments">
               {props => <MainLayout title="Bài tập" showBackButton={true} navigation={props.navigation}><Assignments {...props} /></MainLayout>}
             </Stack.Screen>
+
           </>
         ) : (
           <>
@@ -297,7 +303,25 @@ function AppNavigator() {
             <Stack.Screen name="HomeWork">
               {props => <MainLayout title="Đề bài"  showBackButton={true} navigation={props.navigation}><HomeWork {...props} /></MainLayout>}
             </Stack.Screen>
-            
+            <Stack.Screen name="BTTeacher">
+              {props => <MainLayout title="Bài tập" navigation={props.navigation}><BTTeacher {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="CreateSurvey">
+                {props => <MainLayout title="Tạo bài kiểm tra" navigation={props.navigation}><CreateSurvey {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="EditSurvey">
+                {props => <MainLayout title="Sửa bài kiểm tra" navigation={props.navigation}><EditSurvey {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="AssignmentList">
+                {props => <MainLayout title="Danh sách bài nộp" navigation={props.navigation}><AssignmentList {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="RatingAssignment">
+                {props => <MainLayout title="Chấm điểm" navigation={props.navigation}><RatingAssignment {...props} /></MainLayout>}
+            </Stack.Screen>
+            <Stack.Screen name="HomeWork">
+                {props => <MainLayout title="Đề bài" navigation={props.navigation}><HomeWork {...props} /></MainLayout>}
+            </Stack.Screen>
+
           </>
         )
       ) : (

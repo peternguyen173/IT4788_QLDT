@@ -62,10 +62,11 @@ const PassDueSubmission = ({ navigation,route}) => {
           multiline={true}
           numberOfLines={4}
         />
-        {/* <TextInput
-            style={[styles.input, styles.score]}
-            value={score}
-            editable={false}
+        {/* <TextInput 
+            style={[styles.input, styles.score]} 
+            value={score} 
+            editable={false} 
+
             textAlign="center"
             fontSize={15} // Tăng kích thước font lên 20
             fontWeight="bold" // Đặt font đậm
@@ -137,5 +138,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
 export default PassDueSubmission;

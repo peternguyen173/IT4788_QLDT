@@ -104,7 +104,8 @@ const StudentClassInfo = ({ route }) => {
 
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => navigation.navigate('Assignments', {classId: classInfo.class_id})}
+          onPress={() => navigation.navigate('BTStudent', { classId })}
+
         >
           <Text style={styles.buttonText}>Bài tập</Text>
         </TouchableOpacity>
