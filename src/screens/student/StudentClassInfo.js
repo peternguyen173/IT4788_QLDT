@@ -85,16 +85,7 @@ const StudentClassInfo = ({ route }) => {
       <View style={styles.container}>
         <Text style={styles.header}>Thông tin lớp học</Text>
 
-        <View style={styles.infoContainer}>
-          <Text><Text style={styles.label}>Mã lớp: </Text>{classInfo.class_id}</Text>
-          <Text><Text style={styles.label}>Tên lớp: </Text>{classInfo.class_name}</Text>
-          <Text><Text style={styles.label}>Loại lớp: </Text>{classInfo.class_type}</Text>
-          <Text><Text style={styles.label}>Giảng viên: </Text>{classInfo.lecturer_name}</Text>
-          <Text><Text style={styles.label}>Ngày bắt đầu: </Text>{moment(classInfo.start_date).format("DD-MM-YYYY")}</Text>
-          <Text><Text style={styles.label}>Ngày kết thúc: </Text>{moment(classInfo.end_date).format("DD-MM-YYYY")}</Text>
-          <Text><Text style={styles.label}>Trạng thái: </Text>{classInfo.status}</Text>
-          <Text><Text style={styles.label}>Số sinh viên: </Text>{classInfo.student_count}</Text>
-        </View>
+
 
         <Text style={styles.header}>Danh sách sinh viên</Text>
         <FlatList
@@ -118,13 +109,6 @@ const StudentClassInfo = ({ route }) => {
           <Text style={styles.buttonText}>Bài tập</Text>
         </TouchableOpacity>
 
-          <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate('StudentClassMaterial', { classId })}
-          >
-            <Text style={styles.buttonText}>Tài liệu lớp học</Text>
-          </TouchableOpacity>
-        </View>
       </View>
   );
 };
@@ -173,4 +157,7 @@ const styles = StyleSheet.create({
 });
 
 
+
 export default StudentClassInfo;
+ 
+  

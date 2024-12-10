@@ -11,10 +11,12 @@ import MainLayout from './src/components/MainLayout';
 import StudentProfile from './src/screens/student/StudentProfile';
 import StudentClassList from './src/screens/student/StudentClassList';
 import StudentClassInfo from './src/screens/student/StudentClassInfo';
+import StudentClassMaterial from './src/screens/student/StudentClassMaterial';
 import TeacherProfile from './src/screens/teacher/TeacherProfile';
 import TeacherClassList from './src/screens/teacher/TeacherClassList'
 import TeacherClassInfo from './src/screens/teacher/TeacherClassInfo'
 import TeacherCheckingAttendance from './src/screens/teacher/TeacherCheckingAttendance'
+import TeacherClassMaterial from './src/screens/teacher/TeacherClassMaterial'
 import VerifyScreen from "./src/screens/auth/VerifyScreen";
 import RegisterClass from "./src/screens/student/RegisterClass";
 import OpenClassList from "./src/screens/student/OpenClassList";
@@ -163,6 +165,10 @@ function AppNavigator() {
             </Stack.Screen>
             <Stack.Screen name="StudentClassInfo">
               {props => <MainLayout title="Thông tin lớp học" showBackButton={true} navigation={props.navigation}><StudentClassInfo {...props} /></MainLayout>}
+          </Stack.Screen>
+          <Stack.Screen name="StudentClassMaterial">
+              {props => <MainLayout title="Tài liệu lớp học" showBackButton={true} navigation={props.navigation}><StudentClassMaterial {...props} /></MainLayout>}
+          </Stack.Screen>
             </Stack.Screen>
             <Stack.Screen name="ChatScreen">
               {props => <MainLayout title="Tin nhắn" showBackButton={true} navigation={props.navigation}><ChatScreen {...props} /></MainLayout>}
@@ -257,6 +263,7 @@ function AppNavigator() {
             </Stack.Screen>
             <Stack.Screen name="TeacherCheckingAttendance">
               {props => <MainLayout title="Điểm danh" showBackButton={true} navigation={props.navigation}><TeacherCheckingAttendance {...props} /></MainLayout>}
+
             </Stack.Screen>
            
             <Stack.Screen name="CreateClass">

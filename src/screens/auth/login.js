@@ -53,6 +53,7 @@ const Login = ({ navigation }) => {
         } else if (userData.role === 'TEACHER') {
           navigation.navigate('TeacherHome');
         }
+        console.log(userData.token, userData.id, userData.role);
       }
     } catch (error) {
       Alert.alert('Đăng nhập thất bại', 'Vui lòng kiểm tra lại email và mật khẩu.');

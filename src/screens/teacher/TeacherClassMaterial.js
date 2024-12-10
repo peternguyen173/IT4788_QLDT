@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import {
     View,
     Text,
@@ -847,6 +848,9 @@ const styles = StyleSheet.create({
         right: 10,
         zIndex: 1,
     },
+
+  
+  
 });
 
 export default TeacherClassMaterial;
