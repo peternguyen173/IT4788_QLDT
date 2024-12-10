@@ -18,10 +18,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.qldt",
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true,
+      "permissions": []
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+   
+    "extra": {
+      "eas": {
+        "projectId": "3c2aa6b0-3332-479c-b958-ddf8d75a69e7"
+      }
     }
   }
 }

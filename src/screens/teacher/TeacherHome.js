@@ -1,45 +1,72 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useAuth } from '../../navigators/AuthProvider';
 import Icon from 'react-native-vector-icons/Ionicons'; // Import icon library
+import { useNavigation } from '@react-navigation/native';
 
 const TeacherHome = () => {
   const { userData } = useAuth();
+  const navigation = useNavigation();
 
- 
+  const transformGoogleDriveLink = (link) => {
+    if (link?.includes('drive.google.com')) {
+      const fileId = link.split('/d/')[1]?.split('/')[0];
+      return `https://drive.google.com/uc?id=${fileId}`;
+    }
+    return link; // Return original link if not a Google Drive URL
+  };
+
+  const avatar =
+      transformGoogleDriveLink(userData?.avatar) ||
+      'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg';
+
   const menuItems = [
-    { title: 'Danh sách lớp học', subtitle: 'Xem danh sách các lớp học theo học kỳ', icon: 'book-outline', route: 'ClassList' },
+    { title: 'Danh sách lớp học', subtitle: 'Xem danh sách các lớp học theo học kỳ', icon: 'book-outline', route: 'TeacherClassList' },
     { title: 'Tạo lớp học', subtitle: 'Tạo lớp học mới theo học kỳ', icon: 'person-add-outline', route: 'CreateClass' },
-    { title: 'Bài tập', subtitle: 'Tạo bài tập, theo dõi và chấm điểm', icon: 'clipboard-outline', route: 'Assignments' },
-    { title: 'Điểm danh', subtitle: 'Điểm danh sinh viên trong các buổi học', icon: 'checkmark-done-outline', route: 'Attendance' },
-    { title: 'Xin nghỉ học', subtitle: 'Quản lý yêu cầu nghỉ học của sinh viên', icon: 'calendar-clear-outline', route: 'ManageLeaveRequests' },
+    //{ title: 'Bài tập', subtitle: 'Tạo bài tập, theo dõi và chấm điểm', icon: 'clipboard-outline', route: 'Assignments' },
+    { title: 'Tin nhắn', subtitle: 'Gửi và nhận tin nhắn', icon: 'chatbubbles-outline', route: 'ChatScreen' },
+    //{ title: 'Xin nghỉ học', subtitle: 'Quản lý yêu cầu nghỉ học của sinh viên', icon: 'calendar-clear-outline', route: 'ManageLeaveRequests' },
     { title: 'Thông báo', subtitle: 'Cập nhật tin tức và thông báo', icon: 'notifications-outline', route: 'Notifications' },
   ];
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.header}>
-          <Text style={styles.name}>{userData?.ho + " " + userData?.ten || 'No name'}</Text>
-          <Text style={styles.info}>Mã giảng viên: {userData?.id || 'N/A'}</Text>
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.header}>
+            <Image source={{ uri: avatar }} style={styles.avatar} />
+            <View>
+              <Text style={styles.name}>{userData?.ho + ' ' + userData?.ten || 'No name'}</Text>
+              <Text style={styles.info}>Mã giảng viên: {userData?.id || 'N/A'}</Text>
+              <Text style={styles.info}>Email: {userData?.email || 'N/A'}</Text>
+
+            </View>
+          </View>
+
+          <View style={styles.grid}>
+            {menuItems.map((item, index) => (
+                <TouchableOpacity
+                    key={index}
+                    style={styles.menuItem}
+                    onPress={() => navigation.navigate(item.route)}
+                >
+                  <Icon name={item.icon} size={40} color="#000" style={styles.icon} />
+                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.subtitle}>{item.subtitle}</Text>
+                </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+        <View style={styles.footer}>
+                <Image
+                    source={{
+                      uri: 'https://upload.wikimedia.org/wikipedia/en/8/8e/%C4%90%E1%BA%A1i_h%E1%BB%8Dc_B%C3%A1ch_khoa_H%C3%A0_N%E1%BB%99i_%28logo%29.png', // Replace with your logo URL
+                    }}
+                    style={styles.logo}
+                />
+                <Text style={styles.footerText}>One Love, One Future</Text>
         </View>
-        
-        <View style={styles.grid}>
-          {menuItems.map((item, index) => (
-            <TouchableOpacity 
-              key={index} 
-              style={styles.menuItem}
-              // Mọi người sửa route ở bảng menuItems rồi bỏ comment câu dưới để navigate
-                // onPress={() => navigation.navigate(item.route)}
-            >
-              <Icon name={item.icon} size={40} color="#000" style={styles.icon} />
-              <Text style={styles.title}>{item.title}</Text>
-              <Text style={styles.subtitle}>{item.subtitle}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-    </View>
+
+      </View>
   );
 };
 
@@ -49,36 +76,50 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   scrollContainer: {
-    paddingVertical: 20,
+    flexGrow: 1, // Đảm bảo nội dung cuộn chiếm toàn bộ chiều cao
+    justifyContent: 'center', // Căn giữa nội dung theo chiều dọc
+    alignItems: 'center', // Căn giữa nội dung theo chiều ngang
+    paddingVertical: 10, // Giảm khoảng trắng dọc của toàn bộ nội dung
     paddingHorizontal: 10,
-    alignItems: 'center',
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 20,
+    marginTop: -190,
+       flexDirection: 'row', // Hiển thị avatar và text ngang hàng
+       alignItems: 'center', // Căn giữa theo chiều dọc
+       justifyContent: 'center', // Căn giữa toàn bộ cụm avatar + tên theo chiều ngang
+       marginBottom: 30
+  },
+  avatar: {
+    width: 70, // Kích thước avatar lớn hơn
+    height: 70,
+    borderRadius: 35, // Hình tròn
+    marginRight: 15, // Khoảng cách giữa avatar và tên
   },
   name: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#d32f2f', // Dark red
+    textAlign: 'left', // Text bên trái avatar
   },
   info: {
     fontSize: 14,
     color: '#888',
+    textAlign: 'left', // Text bên trái avatar
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    marginTop: 20, // Thêm khoảng cách giữa grid và header
   },
   menuItem: {
-    width: '47%',  // Adjust width to fit two columns
+    width: '47%',
     backgroundColor: '#fff',
     padding: 20,
     marginVertical: 10,
     alignItems: 'center',
     borderRadius: 10,
-    borderColor: '#d32f2f', // Border color red
+    borderColor: '#d32f2f',
     borderWidth: 1,
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -94,13 +135,39 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#d32f2f', // Dark red
+    color: '#d32f2f',
   },
   subtitle: {
     fontSize: 12,
     color: '#888',
     textAlign: 'center',
   },
+  logo: {
+      width: 100, // Adjust the width of the logo
+      height: 150, // Adjust the height of the logo
+      marginBottom: 10, // Space between the logo and slogan
+    },
+
+    footer: {
+      backgroundColor: '#fff',
+      padding: 15,
+      borderTopColor: '#ddd',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+    },
+
+    footerText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#d32f2f',
+      textAlign: 'center',
+    },
+
 });
+
 
 export default TeacherHome;

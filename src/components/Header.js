@@ -3,20 +3,20 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const Header = ({ title, onBack }) => {
   return (
-    <View style={styles.header}>
-      {onBack && (
-        <TouchableOpacity onPress={onBack}>
-          <Text style={styles.backButton}>Back</Text>
-        </TouchableOpacity>
-      )}
-      <Text style={styles.title}>{title}</Text>
-    </View>
+      <View style={styles.header}>
+        {onBack && (
+            <TouchableOpacity onPress={onBack} style={styles.backButtonContainer}>
+              <Text style={styles.backButton}>◀</Text>
+            </TouchableOpacity>
+        )}
+        <Text style={styles.title}>{title}</Text>
+      </View>
   );
 };
 
 const styles = StyleSheet.create({
   header: {
-    height: 60,
+    height: 65,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#990000', // Red background
@@ -25,14 +25,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   title: {
+    marginTop: 30,
     fontSize: 20,
     fontWeight: 'bold',
     flex: 1,
     textAlign: 'center',
     color: '#fff', // White text
   },
+  backButtonContainer: {
+    marginRight: 10, // Khoảng cách giữa nút và tiêu đề
+    marginTop: 10
+  },
   backButton: {
-    fontSize: 16,
+    fontSize: 20,
     color: '#fff', // White text for back button
   },
 });

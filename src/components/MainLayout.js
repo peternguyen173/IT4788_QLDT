@@ -1,46 +1,51 @@
-// src/components/MainLayout.js
 import React from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
-import Header from './Header'; // Adjust the path as necessary
-import Footer from './Footer'; // Import the CustomFooter
-import { useAuth } from '../navigators/AuthProvider'; 
+import Header from './Header';
+import Footer from './Footer';
+import { useAuth } from '../navigators/AuthProvider';
 
-const MainLayout = ({ title, children, navigation }) => {
-  const { userData } = useAuth(); // Get user data from AuthProvider
+const MainLayout = ({ title, children, navigation, showBackButton = false }) => {
+    const { userData, unreadCount, markInboxAsRead } = useAuth();
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <Header title={title} />
-      <View style={styles.content}>
-        {children}
-      </View>
-      <Footer
-        onHomePress={() => {
-          if (userData.role === 'LECTURER') {
-            navigation.navigate('TeacherHome'); // Navigate to TeacherHome if the user is a teacher
-          } else {
-            navigation.navigate('StudentHome'); // Navigate to StudentHome if the user is a student
-          }
-        }}
-        onProfilePress={() => {
-          if (userData.role === 'LECTURER') {
-            navigation.navigate('TeacherProfile'); // Navigate to TeacherProfile if the user is a teacher
-          } else {
-            navigation.navigate('StudentProfile'); // Navigate to StudentProfile if the user is a student
-          }
-        }}
-      />
-    </SafeAreaView>
-  );
+    const handleInboxPress = () => {
+        markInboxAsRead(); // Mark inbox as read
+        navigation.navigate('ChatScreen');
+    };
+
+    const handleNotificationPress = () => {
+        navigation.navigate('Notifications');
+    }
+
+    const handleBack = () => {
+        navigation.goBack(); // Quay lại màn hình trước đó
+    };
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <Header title={title} onBack={showBackButton ? handleBack : null} />
+            <View style={styles.content}>{children}</View>
+            <Footer
+                onHomePress={() =>
+                    navigation.navigate(userData.role === 'LECTURER' ? 'TeacherHome' : 'StudentHome')
+                }
+                onProfilePress={() =>
+                    navigation.navigate(userData.role === 'LECTURER' ? 'TeacherProfile' : 'StudentProfile')
+                }
+                onInboxPress={handleInboxPress}
+                unreadCount={unreadCount}
+                onNotificationPress={handleNotificationPress}
+            />
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
+    container: {
+        flex: 1,
+    },
+    content: {
+        flex: 1,
+    },
 });
 
 export default MainLayout;

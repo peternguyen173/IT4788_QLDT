@@ -7,6 +7,7 @@ import {
   Platform,
   TouchableOpacity,
   Text,
+
 } from "react-native";
 import { useAuth } from "../../navigators/AuthProvider";
 import { Picker } from "@react-native-picker/picker";
@@ -168,6 +169,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     fontSize: 16,
   },
+
 });
 
 export default EditClass;
