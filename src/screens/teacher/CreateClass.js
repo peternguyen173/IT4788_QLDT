@@ -100,7 +100,7 @@ const CreateClass = ({ navigation }) => {
                 style={styles.datePickerContainer}
                 onPress={() => setStartDatePickerVisibility(true)}
             >
-                <Text>Ngày bắt đầu: {startDate.toLocaleDateString()}</Text>
+                <Text>Ngày bắt đầu: {startDate.getDate()}/{startDate.getMonth() + 1}/{startDate.getFullYear()}</Text>
             </TouchableOpacity>
             <DateTimePickerModal
                 isVisible={isStartDatePickerVisible}
@@ -115,7 +115,7 @@ const CreateClass = ({ navigation }) => {
                 style={styles.datePickerContainer}
                 onPress={() => setEndDatePickerVisibility(true)}
             >
-                <Text>Ngày kết thúc: {endDate.toLocaleDateString()}</Text>
+                <Text>Ngày kết thúc: {endDate.getDate()}/{endDate.getMonth() + 1}/{endDate.getFullYear()}</Text>
             </TouchableOpacity>
             <DateTimePickerModal
                 isVisible={isEndDatePickerVisible}

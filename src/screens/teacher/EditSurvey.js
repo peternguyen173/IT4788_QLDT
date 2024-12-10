@@ -28,6 +28,7 @@ export default function EditSurvey({ navigation, route }) {
   const { userData, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [pic, setPic] = useState(false);
+  const [fileText, setFileText] = useState(false);
 
   const [description, setDescription] = useState("");
   const [file, setFile] = useState({
@@ -44,7 +45,7 @@ export default function EditSurvey({ navigation, route }) {
 
       if (mode === "date") {
         const formattedDate = `${currentDate.getDate()}/${
-          currentDate.getMonth() + 1
+            currentDate.getMonth() + 1
         }/${currentDate.getFullYear()}`;
         setSelectedDate(formattedDate);
       } else if (mode === "time") {
@@ -63,9 +64,9 @@ export default function EditSurvey({ navigation, route }) {
 
     // Tạo chuỗi theo định dạng ISO
     const isoString = `${year}-${String(month).padStart(2, "0")}-${String(
-      day
+        day
     ).padStart(2, "0")}T${String(hour).padStart(2, "0")}:${String(
-      minute
+        minute
     ).padStart(2, "0")}:00`;
 
     return isoString;
@@ -93,6 +94,7 @@ export default function EditSurvey({ navigation, route }) {
         name: result.assets[0].fileName || "uploaded_image.jpg",
       });
       setPic(true)
+      setFileText(true)
     } else {
       alert("No image selected or an error occurred.");
     }
@@ -113,13 +115,13 @@ export default function EditSurvey({ navigation, route }) {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://157.66.24.126:8080/it5023e/edit_survey?file",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+          "http://157.66.24.126:8080/it5023e/edit_survey?file",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
       );
       console.log(response.data);
       const { code } = response.data.meta || {};
@@ -147,101 +149,107 @@ export default function EditSurvey({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#d32f2f" style={styles.loader} />
-      ) : (
-        <View style={{ flex: 1 }}>
-          <View style={styles.form}>
-            <TextInput style={styles.input} value={oldTitle} editable={false} />
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="Mô tả"
-              placeholderTextColor="#B22222"
-              multiline={true}
-              numberOfLines={4}
-              maxLength={2000} // Giới hạn số ký tự tối đa
-              onChangeText={(newText) => setDescription(newText)}
-              value={description}
-            />
-            <Text style = {{fontSize: 11, color: "#B22222", marginTop: 10}}>
-              {description.length}/2000 ký tự
-            </Text>
-            <Text style={styles.orText}>Hoặc</Text>
-            <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-              <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
-            </TouchableOpacity>
-
-            <View style={styles.deadline}>
-              <View>
-                <Text
-                  style={{
-                    fontSize: 17,
-                    fontWeight: "bold",
-                    color: "#B22222",
-                    marginTop: 2,
-                  }}
-                >
-                  Hạn nộp
+      <SafeAreaView style={styles.container}>
+        {loading ? (
+            <ActivityIndicator size="large" color="#d32f2f" style={styles.loader} />
+        ) : (
+            <View style={{ flex: 1 }}>
+              <View style={styles.form}>
+                <TextInput style={styles.input} value={oldTitle} editable={false} />
+                <TextInput
+                    style={[styles.input, styles.textArea]}
+                    placeholder="Mô tả"
+                    placeholderTextColor="#B22222"
+                    multiline={true}
+                    numberOfLines={4}
+                    maxLength={2000} // Giới hạn số ký tự tối đa
+                    onChangeText={(newText) => setDescription(newText)}
+                    value={description}
+                />
+                <Text style = {{fontSize: 11, color: "#B22222", marginTop: 10}}>
+                  {description.length}/2000 ký tự
                 </Text>
-              </View>
-              <View style={styles.pickerContainer}>
-                <Pressable
-                  // onPress={() => setShowStartPicker(true)}
-                  onPress={() => showMode("date")}
-                  style={[styles.picker, { marginBottom: 5 }]}
+                <Text style={styles.orText}>Hoặc</Text>
+                <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+                  <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
+                </TouchableOpacity>
+                {fileText && (
+                    <Text style={{ fontSize: 11 }}>
+                      <Text>Selected File: </Text>
+                      {file.name}
+                    </Text>
+                )}
+
+                <View style={styles.deadline}>
+                  <View>
+                    <Text
+                        style={{
+                          fontSize: 17,
+                          fontWeight: "bold",
+                          color: "#B22222",
+                          marginTop: 2,
+                        }}
+                    >
+                      Hạn nộp
+                    </Text>
+                  </View>
+                  <View style={styles.pickerContainer}>
+                    <Pressable
+                        // onPress={() => setShowStartPicker(true)}
+                        onPress={() => showMode("date")}
+                        style={[styles.picker, { marginBottom: 5 }]}
+                    >
+                      <Text style={styles.pickerText}>
+                        {selectedDate
+                            ? selectedDate
+                            : // .toLocaleDateString()
+                            "Chọn ngày      ▼"}
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                        // onPress={() => setShowEndPicker(true)}
+                        onPress={() => showMode("time")}
+                        style={styles.picker}
+                    >
+                      <Text style={styles.pickerText}>
+                        {selectedTime
+                            ? selectedTime
+                            : // .toLocaleDateString()
+                            "Chọn giờ         ▼"}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+
+                {show && (
+                    <DateTimePicker
+                        value={date} // Ngày/giờ mặc định
+                        mode={mode} // Chế độ hiện tại (date/time)
+                        is24Hour={true} // Sử dụng giờ 24h
+                        display="default" // Giao diện mặc định
+                        onChange={onChange} // Xử lý khi chọn
+                    />
+                )}
+                <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={() => {
+                      if (!description.trim() && !pic) {
+                        Alert.alert("Lỗi", "Bạn cần mô tả bài tập hoặc tải tài liệu lên.");
+                        return;
+                      }
+                      if (!selectedDate || !selectedTime) {
+                        Alert.alert("Lỗi", "Bạn chưa chọn thời gian cho hạn nộp.");
+                        return;
+                      }
+                      EditSurvey();
+                    }}
                 >
-                  <Text style={styles.pickerText}>
-                    {selectedDate
-                      ? selectedDate
-                      : // .toLocaleDateString()
-                        "Chọn ngày      ▼"}
-                  </Text>
-                </Pressable>
-                <Pressable
-                  // onPress={() => setShowEndPicker(true)}
-                  onPress={() => showMode("time")}
-                  style={styles.picker}
-                >
-                  <Text style={styles.pickerText}>
-                    {selectedTime
-                      ? selectedTime
-                      : // .toLocaleDateString()
-                        "Chọn giờ         ▼"}
-                  </Text>
-                </Pressable>
+                  <Text style={styles.submitButtonText}>Sửa bài</Text>
+                </TouchableOpacity>
               </View>
             </View>
-
-            {show && (
-              <DateTimePicker
-                value={date} // Ngày/giờ mặc định
-                mode={mode} // Chế độ hiện tại (date/time)
-                is24Hour={true} // Sử dụng giờ 24h
-                display="default" // Giao diện mặc định
-                onChange={onChange} // Xử lý khi chọn
-              />
-            )}
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={() => {
-                if (!description.trim() && !pic) {
-                  Alert.alert("Lỗi", "Bạn cần mô tả bài tập hoặc tải tài liệu lên.");
-                  return;
-                }
-                if (!selectedDate || !selectedTime) {
-                  Alert.alert("Lỗi", "Bạn chưa chọn thời gian cho hạn nộp.");
-                  return;
-                }
-                EditSurvey();
-              }}
-            >
-              <Text style={styles.submitButtonText}>Sửa bài</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-    </SafeAreaView>
+        )}
+      </SafeAreaView>
   );
 }
 
@@ -311,6 +319,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     width: 180,
+    marginBottom: 5,
   },
   uploadButtonText: {
     color: "white",
@@ -346,10 +355,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     margin: 30,
   },
-  pickerContainer: {
-    justifyContent: "flex-start",
-    marginLeft: 35,
-  },
+
   loader: {
     flex: 1,
     justifyContent: "center",

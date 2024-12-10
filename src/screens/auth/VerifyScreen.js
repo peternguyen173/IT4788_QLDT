@@ -1,16 +1,27 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
+import axios from 'axios';
 
 const VerifyScreen = ({ route, navigation }) => {
-    const { email, verify_code } = route.params; // Retrieve email and verification code from params
-    const [code, setCode] = useState(verify_code); // Pre-fill code with the passed verify_code
+    const { email, verify_code } = route.params; // Nhận email và mã xác thực từ route params
+    const [code, setCode] = useState(verify_code); // Điền trước mã xác thực được truyền
     const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-    const handleVerifyCode = () => {
-        if (code === verify_code) {
-            setShowSuccessModal(true);
-        } else {
-            Alert.alert('Mã xác thực không đúng', 'Vui lòng kiểm tra lại mã xác thực.');
+    const handleVerifyCode = async () => {
+        try {
+            const response = await axios.post('http://157.66.24.126:8080/it4788/check_verify_code', {
+                email: email,
+                verify_code: code,
+            });
+
+            if (response.data.code === '1000') {
+                setShowSuccessModal(true); // Hiển thị modal thành công
+            } else {
+                Alert.alert('Xác thực thất bại', 'Mã xác thực không đúng hoặc đã hết hạn.');
+            }
+        } catch (error) {
+            console.error('Error verifying code:', error);
+            Alert.alert('Lỗi', 'Không thể kết nối với máy chủ. Vui lòng thử lại.');
         }
     };
 
@@ -43,7 +54,7 @@ const VerifyScreen = ({ route, navigation }) => {
                             style={styles.closeButton}
                             onPress={() => {
                                 setShowSuccessModal(false);
-                                navigation.navigate('Login'); // Navigate to the Home screen or another screen if needed
+                                navigation.navigate('Login'); // Điều hướng đến trang Login
                             }}
                         >
                             <Text style={styles.closeButtonText}>Đóng</Text>

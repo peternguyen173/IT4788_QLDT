@@ -25,18 +25,43 @@ const EditClass = ({ route }) => {
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
     const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
-    const { classData } = route.params || {}; // Lấy thông tin lớp từ tham số truyền vào
-
     useEffect(() => {
-        if (classData) {
-            setClassName(classData.class_name || "");
-            setClassType(classData.class_type || "LT");
-            setStartDate(new Date(classData.start_date) || new Date());
-            setEndDate(new Date(classData.end_date) || new Date());
-            setStatus(classData.status || "ACTIVE");
-            setMaxStudent(classData.max_student_amount?.toString() || "");
+        fetchClassInfo();
+    }, [classId]);
+
+    const fetchClassInfo = async () => {
+        try {
+            const response = await fetch("http://157.66.24.126:8080/it5023e/get_basic_class_info", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    token: userData?.token,
+                    role: "LECTURER",
+                    account_id: "2", // Hardcoded account ID
+                    class_id: classId,
+                }),
+            });
+
+            const result = await response.json();
+            if (result.meta.code === "1000") {
+                const classData = result.data;
+                setClassName(classData.class_name || "");
+                setClassType(classData.class_type || "LT");
+                setStartDate(new Date(classData.start_date) || new Date());
+                setEndDate(new Date(classData.end_date) || new Date());
+                setStatus(classData.status || "ACTIVE");
+                setMaxStudent(classData.max_student_amount?.toString() || "");
+            } else {
+                Alert.alert("Lỗi", result.meta.message || "Không thể tải thông tin lớp học.");
+            }
+        } catch (error) {
+            console.error("Error fetching class info:", error);
+            Alert.alert("Lỗi", "Không thể tải thông tin lớp học. Vui lòng thử lại.");
         }
-    }, [classData]);
+    };
+
 
     const handleDateChange = (event, selectedDate, isStartDate) => {
         if (isStartDate) {
@@ -121,7 +146,7 @@ const EditClass = ({ route }) => {
                     style={styles.datePicker}
                     onPress={() => setShowStartDatePicker(true)}
                 >
-                    <Text>Bắt đầu: {startDate.toLocaleDateString()}</Text>
+                    <Text>Bắt đầu: {startDate.getDate()}/{startDate.getMonth() + 1}/{startDate.getFullYear()}</Text>
                 </TouchableOpacity>
                 {showStartDatePicker && (
                     <DateTimePicker
@@ -135,7 +160,7 @@ const EditClass = ({ route }) => {
                     style={styles.datePicker}
                     onPress={() => setShowEndDatePicker(true)}
                 >
-                    <Text>Kết thúc: {endDate.toLocaleDateString()}</Text>
+                    <Text>Kết thúc: {endDate.getDate()}/{endDate.getMonth() + 1}/{endDate.getFullYear()}</Text>
                 </TouchableOpacity>
                 {showEndDatePicker && (
                     <DateTimePicker
@@ -194,7 +219,6 @@ const styles = StyleSheet.create({
         padding: 10,
         flex: 1,
         justifyContent: "center",
-        alignItems: "center",
         marginHorizontal: 5,
     },
     saveButton: {

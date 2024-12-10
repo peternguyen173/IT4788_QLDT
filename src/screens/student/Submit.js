@@ -19,6 +19,7 @@ export default function Submit({ navigation, route }) {
   const { userData, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [pic, setPic] = useState(false);
+  const [fileText, setFileText] = useState(false);
 
   const [answer, setAnswer] = useState("");
   const [file, setFile] = useState({
@@ -44,6 +45,7 @@ export default function Submit({ navigation, route }) {
         name: result.assets[0].fileName || "uploaded_image.jpg",
       });
       setPic(true)
+      setFileText(true)
     } else {
       alert("No image selected or an error occurred.");
     }
@@ -63,13 +65,13 @@ export default function Submit({ navigation, route }) {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://157.66.24.126:8080/it5023e/submit_survey?file",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+          "http://157.66.24.126:8080/it5023e/submit_survey?file",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
       );
       console.log(response.data);
       const { code } = response.data.meta || {};
@@ -78,7 +80,7 @@ export default function Submit({ navigation, route }) {
           {
             text: "OK",
             onPress: () =>
-              navigation.navigate("BTStudent", { classId: item.class_id }),
+                navigation.navigate("BTStudent", { classId: item.class_id }),
           },
         ]);
       }
@@ -92,15 +94,15 @@ export default function Submit({ navigation, route }) {
       } else if (error.response && error.response.status === 400) {
         // Nếu token không hợp lệ hoặc đã hết hạn, đăng xuất
         Alert.alert(
-          "Bạn đã nộp bài này rồi.",
-          "Mỗi sinh viên chỉ có thể nộp bài một lần.",
-          [
-            {
-              text: "OK",
-              onPress: () =>
-                navigation.navigate("UpcomingSubmission", { item }),
-            },
-          ]
+            "Bạn đã nộp bài này rồi.",
+            "Mỗi sinh viên chỉ có thể nộp bài một lần.",
+            [
+              {
+                text: "OK",
+                onPress: () =>
+                    navigation.navigate("UpcomingSubmission", { item }),
+              },
+            ]
         );
       } else {
         Alert.alert("Lỗi", "Vui lòng thử lại sau.", { text: "OK" });
@@ -111,45 +113,51 @@ export default function Submit({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#d32f2f" style={styles.loader} />
-      ) : (
-        <View style={styles.form}>
-          <TextInput style={styles.input} value={item.title} editable={false} />
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Bài làm"
-            placeholderTextColor="#B22222"
-            multiline={true}
-            numberOfLines={4}
-            maxLength={2000}
-            onChangeText={(newText) => setAnswer(newText)}
-            value={answer}
-          />
-          <Text style={{ fontSize: 11, color: "#B22222", marginTop: 10 }}>
-            {answer.length}/2000 ký tự
-          </Text>
-          <Text style={styles.orText}>Hoặc</Text>
-          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-            <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
-          </TouchableOpacity>
+      <SafeAreaView style={styles.container}>
+        {loading ? (
+            <ActivityIndicator size="large" color="#d32f2f" style={styles.loader} />
+        ) : (
+            <View style={styles.form}>
+              <TextInput style={styles.input} value={item.title} editable={false} />
+              <TextInput
+                  style={[styles.input, styles.textArea]}
+                  placeholder="Bài làm"
+                  placeholderTextColor="#B22222"
+                  multiline={true}
+                  numberOfLines={4}
+                  maxLength={2000}
+                  onChangeText={(newText) => setAnswer(newText)}
+                  value={answer}
+              />
+              <Text style={{ fontSize: 11, color: "#B22222", marginTop: 10 }}>
+                {answer.length}/2000 ký tự
+              </Text>
+              <Text style={styles.orText}>Hoặc</Text>
+              <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+                <Text style={styles.uploadButtonText}>Tải tài liệu lên ▲</Text>
+              </TouchableOpacity>
+              {fileText && (
+                  <Text style={{ fontSize: 11 }}>
+                    <Text>Selected File: </Text>
+                    {file.name}
+                  </Text>
+              )}
 
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={() => {
-              if (!answer.trim() && !pic) {
-                Alert.alert("Lỗi", "Bạn cần điền câu trả lời hoặc tải tài liệu lên.");
-                return;
-              }
-              SubmitAnswer()
-            }}
-          >
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </SafeAreaView>
+              <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={() => {
+                    if (!answer.trim() && !pic) {
+                      Alert.alert("Lỗi", "Bạn cần điền câu trả lời hoặc tải tài liệu lên.");
+                      return;
+                    }
+                    SubmitAnswer()
+                  }}
+              >
+                <Text style={styles.submitButtonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+        )}
+      </SafeAreaView>
   );
 }
 
@@ -229,7 +237,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     width: 180,
-    marginBottom: 30,
+    marginBottom: 5,
   },
   uploadButtonText: {
     color: "white",
@@ -241,6 +249,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     width: 100,
+    marginTop: 30
   },
   submitButtonText: {
     color: "white",

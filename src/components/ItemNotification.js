@@ -5,17 +5,20 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useAuth } from '../navigators/AuthProvider';
 
 const ItemNotification = ({
-    id,
-    status,
-    from_user,
-    to_user,
-    sent_time,
-    message,
-    type,
-    onToggleSelect,
-    isSelected
-}) => {
+                              id,
+                              status,
+                              from_user,
+                              to_user,
+                              sent_time,
+                              message,
+                              type,
+                              onToggleSelect,
+                              isSelected,
+
+                          }) => {
+    const itemNotifications = [id, status, from_user, to_user, sent_time, message, type];
     const { userData } = useAuth();
+
     const navigation = useNavigation();
     const mark_notifications_as_read = async (id) => {
 
@@ -43,9 +46,9 @@ const ItemNotification = ({
         }
     }
     const handlePressDetail = async () => {
-        navigation.navigate('DetailNotification');
+        navigation.navigate('DetailNotification', { itemNotifications: itemNotifications });
         await mark_notifications_as_read(id);
-        
+
     }
 
     return (

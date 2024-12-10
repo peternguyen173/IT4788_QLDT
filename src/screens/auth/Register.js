@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import PushNotification from 'react-native-push-notification';
+import Icon from "react-native-vector-icons/Ionicons";
 
 const Register = ({ navigation }) => {
   const [ho, setHo] = useState('');
@@ -18,6 +19,10 @@ const Register = ({ navigation }) => {
   const [errorRole, setErrorRole] = useState('');
   const hoInputRef = useRef(null);
   const [showRoleOption, setShowRoleOption] = useState(true);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorConfirmPassword, setErrorConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     hoInputRef.current?.focus();
@@ -58,11 +63,24 @@ const Register = ({ navigation }) => {
     }
 
     if (!password.trim()) {
-      setErrorPassword('Password không được để trống!');
+      setErrorPassword('Mật khẩu không được để trống!');
+      valid = false;
+    } else if (password.length < 6 || password.length > 10) {
+      setErrorPassword('Mật khẩu phải có độ dài từ 6 đến 10 ký tự!');
       valid = false;
     } else {
       setErrorPassword('');
     }
+    if (!confirmPassword.trim()) {
+      setErrorConfirmPassword('Confirm Password không được để trống!');
+      valid = false;
+    } else if (password !== confirmPassword) {
+      setErrorConfirmPassword('Mật khẩu xác nhận không khớp!');
+      valid = false;
+    } else {
+      setErrorConfirmPassword('');
+    }
+
 
     if (!role) {
       setErrorRole('Bạn phải chọn vai trò!');
@@ -86,7 +104,7 @@ const Register = ({ navigation }) => {
         role,
       });
 
-      if (response.data.code === 1000) {
+      if (response.data.code == 1000) {
         const verifyCode = response.data.verify_code;
 
 
@@ -152,15 +170,48 @@ const Register = ({ navigation }) => {
         />
         {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
 
-        <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            placeholderTextColor="#fff"
-        />
+        <View style={{ position: 'relative', marginBottom: 10 }}>
+          <TextInput
+              style={[styles.input, { paddingRight: 40 }]} // Thêm padding để tránh chồng biểu tượng
+              placeholder="Mật khẩu"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              placeholderTextColor="#fff"
+          />
+          <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              style={styles.eyeIcon}
+          >
+            <Icon
+                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                size={24}
+                color="#fff"
+            />
+          </TouchableOpacity>
+        </View>
         {errorPassword ? <Text style={styles.errorText}>{errorPassword}</Text> : null}
+        <View style={{ position: 'relative', marginBottom: 10 }}>
+          <TextInput
+              style={[styles.input, { paddingRight: 40 }]} // Thêm padding để tránh chồng biểu tượng
+              placeholder="Xác nhận mật khẩu"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showConfirmPassword}
+              placeholderTextColor="#fff"
+          />
+          <TouchableOpacity
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              style={styles.eyeIcon}
+          >
+            <Icon
+                name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                size={24}
+                color="#fff"
+            />
+          </TouchableOpacity>
+        </View>
+        {errorConfirmPassword ? <Text style={styles.errorText}>{errorConfirmPassword}</Text> : null}
 
         <View style={styles.pickerContainer}>
           <View style={styles.pickerBorder}>
@@ -207,9 +258,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#fff',
   },
-  footer: {
+  eyeIcon: {
     position: 'absolute',
-    bottom: 30,
+    right: 18, // Đặt biểu tượng "mắt" sát lề phải
+    top: '50%', // Đặt ở giữa chiều dọc
+    transform: [{ translateY: -17 }], // Điều chỉnh vị trí để căn giữa
+  },
+  footer: {
+    position: 'relative',
+    bottom: -160,
     alignSelf: 'center',
     flexDirection: 'row',
   },

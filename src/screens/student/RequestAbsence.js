@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, TouchableOpacity,  StyleSheet
+} from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import * as DocumentPicker from 'expo-document-picker';
@@ -187,12 +188,30 @@ const RequestAbsence = ({ navigation,route }) => {
       </Formik>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate('HistoryReqAbsence', { classId: route.params.classId })}
+          onPress={() => navigation.navigate('HistoryReqAbsence', { classId: route.params.classId })}
+          style={styles.historyButton}
       >
-        <Text >Danh xin nghi cua ban</Text>
+        <Text style={styles.historyButtonText}>Lịch sử nghỉ của bạn</Text>
       </TouchableOpacity>
+
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  historyButton: {
+    backgroundColor: '#1E90FF', // Màu xanh đẹp mắt
+    paddingVertical: 12,
+    borderRadius: 10,
+    margin:50,
+    marginTop: 50,
+    alignItems: 'center',
+  },
+  historyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default RequestAbsence;

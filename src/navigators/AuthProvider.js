@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }) => {
         index: '0',
         count: '50', // Fetch up to 50 conversations
       });
-      console.log("data fetch", userData.token);
 
       if (response.data.meta.code === '1000') {
         const conversations = response.data.data.conversations;
@@ -53,7 +52,7 @@ export const AuthProvider = ({ children }) => {
         console.error('Error fetching conversations:', response.data.meta.message);
       }
     } catch (error) {
-      console.error('Error fetching unread count:', error);
+     // console.error('Error fetching unread count:', error);
     }
   };
 
@@ -72,12 +71,11 @@ export const AuthProvider = ({ children }) => {
         if (response.status === 200) {
             const data = await response.json();
             setUnreadNotifications(data.data);
-            console.log(data.data); 
         } else {
-            console.log("Error fetching unread notifications");
+      //      console.log("Error fetching unread notifications");
         }
     } catch (error) {
-        console.error(error);
+
     }
   }
   useEffect(() => {

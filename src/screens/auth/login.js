@@ -10,16 +10,50 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorPassword, setErrorPassword] = useState('');
   const [forgotEmail, setForgotEmail] = useState('');
   const { login, isLoggedIn, userData, fcmToken, setIsLoggedIn, setUserData } = useAuth();
+  const [errorEmail, setErrorEmail] = useState('');
 
+  const validateEmail = () => {
+    if (!email.trim()) {
+      setErrorEmail('Email không được để trống!');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@(hust\.edu\.vn|soict\.hust\.edu\.vn)$/;
+    if (!emailRegex.test(email)) {
+      setErrorEmail('Email phải có đuôi @hust.edu.vn hoặc @soict.hust.edu.vn!');
+      return false;
+    }
+    setErrorEmail('');
+    return true;
+  };
+
+  const validatePassword = () => {
+    if (!password.trim()) {
+      setErrorPassword('Mật khẩu không được để trống!');
+      return false;
+    } else if (password.length < 6 || password.length > 10) {
+      setErrorPassword('Mật khẩu phải có độ dài từ 6 đến 10 ký tự!');
+      return false;
+    } else {
+      setErrorPassword('');
+      return true;
+    }
+  };
 
   const handleLogin = async () => {
+    if (!validateEmail()) {
+    }
+    if(!validatePassword()){}
+    if (!validateEmail() || !validatePassword()) {
+      setLoading(false);
+      return;
+    }
     const device_id = 1; // Assume deviceId is 1
     setLoading(true);
-    console.log("dsad",fcmToken);
     try {
-    console.log(email, password)
       const response = await axios.post('http://157.66.24.126:8080/it4788/login', {
         email,
         password,
@@ -46,7 +80,7 @@ const Login = ({ navigation }) => {
           await AsyncStorage.setItem('token', userData.token);
           await AsyncStorage.setItem('user', JSON.stringify(userData));
         } else {
-          console.warn('Token is undefined or null, not storing it.');
+        //  console.warn('Token is undefined or null, not storing it.');
         }
         if (userData.role === 'STUDENT') {
           navigation.navigate('StudentHome');
@@ -56,7 +90,7 @@ const Login = ({ navigation }) => {
       }
     } catch (error) {
       Alert.alert('Đăng nhập thất bại', 'Vui lòng kiểm tra lại email và mật khẩu.');
-      console.error(error);
+     // console.error(error);
     } finally {
       setLoading(false);
     }
@@ -74,27 +108,50 @@ const Login = ({ navigation }) => {
         </View>
     );
   }
-
+  if (loading) {
+    return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#990000" />
+        </View>
+    );
+  }
   return (
 
     <View style={styles.container}>
      <Text style={styles.hustTitle}>HUST</Text>
       <Text style={styles.title}>Welcome to QLDT!</Text>
       <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          placeholderTextColor="#666"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Mật khẩu"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      {errorEmail ? <Text style={styles.errorText}>{errorEmail}</Text> : null}
+      <View style={{ position: 'relative'}}>
+        <TextInput
+            style={[styles.input, { paddingRight: 40 }]}
+            placeholder="Mật khẩu"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            placeholderTextColor="#666"
+        />
+        <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            style={styles.eyeIcon}
+        >
+          <MaterialCommunityIcons
+              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+              size={24}
+              color="#666"
+          />
+        </TouchableOpacity>
+      </View>
+
+      {errorPassword ? <Text style={styles.errorText}>{errorPassword}</Text> : null}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Đăng nhập</Text>
       </TouchableOpacity>
@@ -190,6 +247,18 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 14,
+    top: 12,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 10,
+    marginTop: -14,
+    marginLeft: 6
   },
   forgotPassword: {
     color: '#fff',

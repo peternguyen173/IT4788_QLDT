@@ -173,11 +173,12 @@ const TeacherConversationScreen = ({ route }) => {
     };
 
     const transformGoogleDriveLink = (link) => {
-        if (link.includes('drive.google.com')) {
+        if(link == null) return "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
+        if (link != null && link.includes('drive.google.com')) {
             const fileId = link.split('/d/')[1]?.split('/')[0];
             return `https://drive.google.com/uc?id=${fileId}`;
         }
-        return link; // Return original link if it's not a Google Drive link
+        return link;
     };
 
     const renderMessage = ({ item, index }) => {

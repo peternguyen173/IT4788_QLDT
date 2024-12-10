@@ -133,7 +133,7 @@ const TeacherClassList = ({ navigation }) => {
         onPress={() => navigation.navigate('TeacherClassInfo', { classId: item.class_id })}
       >
         <View style={styles.cardHeader}>
-          <Text style={[styles.className, { color: isActive ? '#d32f2f' : '#721c24' }]}>{item.class_name}</Text>
+          <Text style={[styles.className, { color: isActive ? '#d32f2f' : '#721c24' }]}>{item.class_id} - {item.class_name}</Text>
           <Text style={[styles.classType, { color: isActive ? '#666' : '#721c24' }]}>Loại: {item.class_type}</Text>
         </View>
 

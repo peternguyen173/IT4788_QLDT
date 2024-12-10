@@ -107,6 +107,7 @@ const StudentClassInfo = ({ route }) => {
           <TouchableOpacity
               style={styles.button}
               //   onPress={() => chuyển sang màn hình xin nghỉ học
+              onPress={() => navigation.navigate('RequestAbsence', { classId: classInfo.class_id, className: classInfo.class_name })}
           >
             <Text style={styles.buttonText}>Xin nghỉ học</Text>
           </TouchableOpacity>
@@ -114,6 +115,7 @@ const StudentClassInfo = ({ route }) => {
           <TouchableOpacity
               style={styles.button}
               //   onPress={() => chuyển sang màn hình bài tập
+              onPress={() => navigation.navigate('Assignments', {classId: classInfo.class_id})}
           >
             <Text style={styles.buttonText}>Bài tập</Text>
           </TouchableOpacity>

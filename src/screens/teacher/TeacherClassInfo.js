@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import moment from 'moment';
 import mime from 'mime';
 import {useNavigation} from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useFocusEffect } from '@react-navigation/native';
 
 const TeacherClassInfo = ({ route }) => {
   const { classId } = route.params;
@@ -43,12 +44,22 @@ const TeacherClassInfo = ({ route }) => {
   const menuItems = [
 
     { title: 'Thêm sinh viên', icon: 'person-add-outline', onPress: () => navigation.navigate('AddStudent', { classId }) },
-    { title: 'Danh sách nghỉ học', icon: 'people-outline', onPress: () => navigation.navigate('TeacherCheckingAbsence', { classId }) },
-    { title: 'Chỉnh sửa', icon: 'settings-outline', onPress: () => navigation.navigate('EditClass', { classId }) },
+    { title: 'Danh sách nghỉ học', icon: 'people-outline', onPress: () => navigation.navigate('TeacherCheckingAbsence', { classId, className:classInfo.class_name }) },
+    { title: 'Chỉnh sửa', icon: 'settings-outline', onPress: () =>
+          navigation.navigate('EditClass', {
+            classId,
+            classData: classInfo
+          })
+    },
     { title: 'Tài liệu lớp học', icon: 'document-text-outline', onPress: () => navigation.navigate('TeacherClassMaterial', { classId }) }
 
   ];
 
+  useFocusEffect(
+      useCallback(() => {
+        fetchClassInfo();
+      }, [classId])
+  );
   useEffect(() => {
     fetchClassInfo();
   }, [classId]);

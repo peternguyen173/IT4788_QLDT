@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  FlatList, 
-  ActivityIndicator, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
   Alert,
   TouchableWithoutFeedback
 } from 'react-native';
@@ -13,10 +13,11 @@ import axios from 'axios';
 import { useAuth } from '../../navigators/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
+import { sendNotification } from '../../utils/sendNotification';
 
 const AttendanceToggle = ({ status, onToggle }) => {
   const getStatusColor = () => {
-    switch(status) {
+    switch (status) {
       case 'PRESENT': return '#4CAF50'; // Green
       case 'EXCUSED_ABSENCE': return '#FFC107'; // Amber
       case 'UNEXCUSED_ABSENCE': return '#F44336'; // Red
@@ -25,7 +26,7 @@ const AttendanceToggle = ({ status, onToggle }) => {
   };
 
   const getNextStatus = () => {
-    switch(status) {
+    switch (status) {
       case 'PRESENT': return 'EXCUSED_ABSENCE';
       case 'EXCUSED_ABSENCE': return 'UNEXCUSED_ABSENCE';
       case 'UNEXCUSED_ABSENCE': return 'PRESENT';
@@ -34,7 +35,7 @@ const AttendanceToggle = ({ status, onToggle }) => {
   };
 
   const getStatusLabel = () => {
-    switch(status) {
+    switch (status) {
       case 'PRESENT': return 'Có mặt';
       case 'EXCUSED_ABSENCE': return 'Vắng có phép';
       case 'UNEXCUSED_ABSENCE': return 'Vắng không phép';
@@ -43,11 +44,11 @@ const AttendanceToggle = ({ status, onToggle }) => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={onToggle}>
-      <View style={[styles.toggleContainer, { backgroundColor: getStatusColor() }]}>
-        <Text style={styles.toggleText}>{getStatusLabel()}</Text>
-      </View>
-    </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback onPress={onToggle}>
+        <View style={[styles.toggleContainer, { backgroundColor: getStatusColor() }]}>
+          <Text style={styles.toggleText}>{getStatusLabel()}</Text>
+        </View>
+      </TouchableWithoutFeedback>
   );
 };
 
@@ -77,18 +78,18 @@ const TeacherCheckingAttendance = ({ route }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://157.66.24.126:8080/it5023e/get_class_info',
-        {
-          token: userData.token,
-          role: userData.role,
-          account_id: userData.id,
-          class_id: classId,
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${userData.token}`,
+          'http://157.66.24.126:8080/it5023e/get_class_info',
+          {
+            token: userData.token,
+            role: userData.role,
+            account_id: userData.id,
+            class_id: classId,
           },
-        }
+          {
+            headers: {
+              'Authorization': `Bearer ${userData.token}`,
+            },
+          }
       );
 
       if (response.data && response.data.data) {
@@ -121,21 +122,21 @@ const TeacherCheckingAttendance = ({ route }) => {
   const fetchAttendanceList = async () => {
     try {
       const response = await axios.post(
-        'http://157.66.24.126:8080/it5023e/get_attendance_list',
-        {
-          token: userData.token,
-          class_id: classId,
-          date: currentDate,
-          pageable_request: {
-            page: "0",
-            page_size: numberOfStudents,
-          }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${userData.token}`,
+          'http://157.66.24.126:8080/it5023e/get_attendance_list',
+          {
+            token: userData.token,
+            class_id: classId,
+            date: currentDate,
+            pageable_request: {
+              page: "0",
+              page_size: numberOfStudents,
+            }
           },
-        }
+          {
+            headers: {
+              'Authorization': `Bearer ${userData.token}`,
+            },
+          }
       );
       console.log("Goi danh sach diem danh");
       console.log(response.data.data.attendance_student_details);
@@ -157,6 +158,7 @@ const TeacherCheckingAttendance = ({ route }) => {
 
         setAttendanceStatus(existingAttendance);
         setAttendanceIds(existingAttendanceIds);
+
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -170,7 +172,7 @@ const TeacherCheckingAttendance = ({ route }) => {
       const currentStatus = prev[studentId];
       let newStatus;
 
-      switch(currentStatus) {
+      switch (currentStatus) {
         case 'PRESENT':
           newStatus = 'EXCUSED_ABSENCE';
           break;
@@ -195,44 +197,48 @@ const TeacherCheckingAttendance = ({ route }) => {
     try {
       // Danh sách sinh viên vắng không phép
       const unexcusedAbsenceList = Object.keys(attendanceStatus)
-        .filter(studentId => attendanceStatus[studentId] === 'UNEXCUSED_ABSENCE');
+          .filter(studentId => attendanceStatus[studentId] === 'UNEXCUSED_ABSENCE');
+      console.log("Danh sách vắng không phép: ", unexcusedAbsenceList);
+      const unexcusedAccountIds = students.filter(student => unexcusedAbsenceList.includes(student.student_id))
+          .map(student => student.account_id);
+      console.log("Danh sách account id vắng không phép: ", unexcusedAccountIds);
 
-      // Danh sách sinh viên vắng có phép
+      // Danh sách sinh viên vắng cósphép
       const excusedAbsenceList = Object.keys(attendanceStatus)
-        .filter(studentId => attendanceStatus[studentId] === 'EXCUSED_ABSENCE');
+          .filter(studentId => attendanceStatus[studentId] === 'EXCUSED_ABSENCE');
 
       // Gọi API take_attendance cho sinh viên vắng không phép
       await axios.post(
-        'http://157.66.24.126:8080/it5023e/take_attendance',
-        {
-          token: userData.token,
-          class_id: classId,
-          date: currentDate,
-          attendance_list: unexcusedAbsenceList,
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${userData.token}`,
+          'http://157.66.24.126:8080/it5023e/take_attendance',
+          {
+            token: userData.token,
+            class_id: classId,
+            date: currentDate,
+            attendance_list: unexcusedAbsenceList,
           },
-        }
+          {
+            headers: {
+              'Authorization': `Bearer ${userData.token}`,
+            },
+          }
       );
 
       const attendanceListResponse = await axios.post(
-        'http://157.66.24.126:8080/it5023e/get_attendance_list',
-        {
-          token: userData.token,
-          class_id: classId,
-          date: currentDate,
-          pageable_request: {
-            page: "0",
-            page_size: numberOfStudents,
-          }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${userData.token}`,
+          'http://157.66.24.126:8080/it5023e/get_attendance_list',
+          {
+            token: userData.token,
+            class_id: classId,
+            date: currentDate,
+            pageable_request: {
+              page: "0",
+              page_size: numberOfStudents,
+            }
           },
-        }
+          {
+            headers: {
+              'Authorization': `Bearer ${userData.token}`,
+            },
+          }
       );
 
       // Cập nhật lại attendanceIds
@@ -249,20 +255,25 @@ const TeacherCheckingAttendance = ({ route }) => {
         const attendanceId = updatedAttendanceIds[studentId];
         if (attendanceId) {
           const response = await axios.post(
-            'http://157.66.24.126:8080/it5023e/set_attendance_status',
-            {
-              token: userData.token,
-              status: 'EXCUSED_ABSENCE',
-              attendance_id: attendanceId,
-            },
-            {
-              headers: {
-                'Authorization': `Bearer ${userData.token}`,
+              'http://157.66.24.126:8080/it5023e/set_attendance_status',
+              {
+                token: userData.token,
+                status: 'EXCUSED_ABSENCE',
+                attendance_id: attendanceId,
               },
-            }
+              {
+                headers: {
+                  'Authorization': `Bearer ${userData.token}`,
+                },
+              }
           );
           console.log(response.data);
         }
+      }
+
+      //gửi thông báo cho các bạn vắng không phép
+      for(const accountId of unexcusedAccountIds){
+        await sendNotification(userData.token,`Bạn đã bị điểm danh vắng không phép lớp ${classId}`,accountId, "ABSENCE");
       }
 
       Alert.alert('Điểm danh', 'Điểm danh thành công!');
@@ -276,18 +287,18 @@ const TeacherCheckingAttendance = ({ route }) => {
   // Hiển thị loading nếu đang tải dữ liệu
   if (loading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
     );
   }
 
   // Nếu không có sinh viên trong lớp
   if (students.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text>Không có sinh viên trong lớp.</Text>
-      </View>
+        <View style={styles.container}>
+          <Text>Không có sinh viên trong lớp.</Text>
+        </View>
     );
   }
 
@@ -296,35 +307,35 @@ const TeacherCheckingAttendance = ({ route }) => {
     const status = attendanceStatus[item.student_id];
 
     return (
-      <View style={styles.studentContainer}>
-        <View style={styles.studentInfoContainer}>
-          <Text style={styles.studentName}>{item.first_name} {item.last_name}</Text>
-          <Text style={styles.studentEmail}>{item.email}</Text>
+        <View style={styles.studentContainer}>
+          <View style={styles.studentInfoContainer}>
+            <Text style={styles.studentName}>{item.first_name} {item.last_name}</Text>
+            <Text style={styles.studentEmail}>{item.email}</Text>
+          </View>
+          <View style={styles.attendanceContainer}>
+            <AttendanceToggle
+                status={status}
+                onToggle={() => toggleAttendanceStatus(item.student_id)}
+            />
+          </View>
         </View>
-        <View style={styles.attendanceContainer}>
-          <AttendanceToggle
-            status={status}
-            onToggle={() => toggleAttendanceStatus(item.student_id)}
-          />
-        </View>
-      </View>
     );
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Điểm danh: {moment(currentDate).format('DD/MM/YYYY')}</Text>
+      <View style={styles.container}>
+        <Text style={styles.header}>Điểm danh: {moment(currentDate).format('DD/MM/YYYY')}</Text>
 
-      <FlatList
-        data={students}
-        renderItem={renderStudent}
-        keyExtractor={(item) => item.student_id.toString()}
-      />
+        <FlatList
+            data={students}
+            renderItem={renderStudent}
+            keyExtractor={(item) => item.student_id.toString()}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Lưu điểm danh</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Lưu điểm danh</Text>
+        </TouchableOpacity>
+      </View>
   );
 };
 
