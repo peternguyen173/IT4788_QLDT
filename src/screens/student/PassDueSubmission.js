@@ -66,6 +66,7 @@ const PassDueSubmission = ({ navigation,route}) => {
             style={[styles.input, styles.score]} 
             value={score} 
             editable={false} 
+
             textAlign="center"
             fontSize={15} // Tăng kích thước font lên 20
             fontWeight="bold" // Đặt font đậm
@@ -76,7 +77,7 @@ const PassDueSubmission = ({ navigation,route}) => {
 };
 
 const styles = StyleSheet.create({
-    
+
   container: {
     padding: 20,
     flex: 1,
@@ -137,5 +138,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
 export default PassDueSubmission;

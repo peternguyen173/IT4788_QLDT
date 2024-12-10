@@ -61,7 +61,7 @@ const HomeWork = ({ navigation, route}) => {
 };
 
 const styles = StyleSheet.create({
-    
+
   container: {
     padding: 20,
     paddingTop:80,
@@ -120,5 +120,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
 export default HomeWork;

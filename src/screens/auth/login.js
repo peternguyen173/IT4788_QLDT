@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, ActivityIndicator} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'; // Import the icon library
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,18 +11,22 @@ const Login = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
-  const { login } = useAuth();
+  const { login, isLoggedIn, userData, fcmToken, setIsLoggedIn, setUserData } = useAuth();
+
 
   const handleLogin = async () => {
     const device_id = 1; // Assume deviceId is 1
     setLoading(true);
-
+    console.log("dsad",fcmToken);
     try {
+    console.log(email, password)
       const response = await axios.post('http://157.66.24.126:8080/it4788/login', {
         email,
         password,
         device_id,
+        fcm_token: fcmToken.toString()
       });
+
 
       if (response.status === 200) {
         const userData = response.data.data;
@@ -31,6 +35,7 @@ const Login = ({ navigation }) => {
           ho: userData.ho,
           ten: userData.ten,
           username: userData.username,
+          email:userData.email,
           token: userData.token,
           active: userData.active,
           role: userData.role,
@@ -39,6 +44,7 @@ const Login = ({ navigation }) => {
         login(user);
         if (userData?.token) {
           await AsyncStorage.setItem('token', userData.token);
+          await AsyncStorage.setItem('user', JSON.stringify(userData));
         } else {
           console.warn('Token is undefined or null, not storing it.');
         }
@@ -47,6 +53,7 @@ const Login = ({ navigation }) => {
         } else if (userData.role === 'TEACHER') {
           navigation.navigate('TeacherHome');
         }
+        console.log(userData.token, userData.id, userData.role);
       }
     } catch (error) {
       Alert.alert('Đăng nhập thất bại', 'Vui lòng kiểm tra lại email và mật khẩu.');
@@ -61,8 +68,16 @@ const Login = ({ navigation }) => {
     setForgotPasswordVisible(false);
     Alert.alert('Yêu cầu được gửi', `Vui lòng kiểm tra email của bạn: ${forgotEmail}`);
   };
+  if (loading) {
+    return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#990000" />
+        </View>
+    );
+  }
 
   return (
+
     <View style={styles.container}>
      <Text style={styles.hustTitle}>HUST</Text>
       <Text style={styles.title}>Welcome to QLDT!</Text>
