@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  FlatList, 
-  TouchableOpacity, 
-  ActivityIndicator, 
-  Alert 
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import axios from 'axios';
 import { useAuth } from '../../navigators/AuthProvider';
@@ -28,18 +28,18 @@ const StudentClassInfo = ({ route }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        'http://157.66.24.126:8080/it5023e/get_class_info',
-        {
-          class_id: classId,
-          token: userData.token,
-          role: userData.role,
-          account_id: userData.id,
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${userData.token}`,
+          'http://157.66.24.126:8080/it5023e/get_class_info',
+          {
+            class_id: classId,
+            token: userData.token,
+            role: userData.role,
+            account_id: userData.id,
           },
-        }
+          {
+            headers: {
+              'Authorization': `Bearer ${userData.token}`,
+            },
+          }
       );
       setClassInfo(response.data.data); // Set dữ liệu lớp vào state
     } catch (error) {
@@ -59,73 +59,57 @@ const StudentClassInfo = ({ route }) => {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
     );
   }
 
   if (!classInfo) {
     return (
-      <View style={styles.container}>
-        <Text>Không có thông tin lớp học</Text>
-      </View>
+        <View style={styles.container}>
+          <Text>Không có thông tin lớp học</Text>
+        </View>
     );
   }
 
   // Hàm render sinh viên
   const renderStudent = ({ item }) => (
-    <View style={styles.studentContainer}>
-      <Text>{item.first_name} {item.last_name}</Text>
-      <Text>{item.email}</Text>
-    </View>
+      <View style={styles.studentContainer}>
+        <Text>{item.first_name} {item.last_name}</Text>
+        <Text>{item.email}</Text>
+      </View>
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Thông tin lớp học</Text>
+      <View style={styles.container}>
+        <Text style={styles.header}>Thông tin lớp học</Text>
 
-      <View style={styles.infoContainer}>
-        <Text><Text style={styles.label}>Mã lớp: </Text>{classInfo.class_id}</Text>
-        <Text><Text style={styles.label}>Tên lớp: </Text>{classInfo.class_name}</Text>
-        <Text><Text style={styles.label}>Loại lớp: </Text>{classInfo.class_type}</Text>
-        <Text><Text style={styles.label}>Giảng viên: </Text>{classInfo.lecturer_name}</Text>
-        <Text><Text style={styles.label}>Ngày bắt đầu: </Text>{moment(classInfo.start_date).format("DD-MM-YYYY")}</Text>
-        <Text><Text style={styles.label}>Ngày kết thúc: </Text>{moment(classInfo.end_date).format("DD-MM-YYYY")}</Text>
-        <Text><Text style={styles.label}>Trạng thái: </Text>{classInfo.status}</Text>
-        <Text><Text style={styles.label}>Số sinh viên: </Text>{classInfo.student_count}</Text>
-      </View>
 
-      <Text style={styles.header}>Danh sách sinh viên</Text>
-      <FlatList
-        data={classInfo.student_accounts}
-        renderItem={renderStudent}
-        keyExtractor={(item) => item.student_id.toString()}
-      />
 
-      <View style={styles.buttonContainer}>
+        <Text style={styles.header}>Danh sách sinh viên</Text>
+        <FlatList
+            data={classInfo.student_accounts}
+            renderItem={renderStudent}
+            keyExtractor={(item) => item.student_id.toString()}
+        />
+
+        <View style={styles.buttonContainer}>
         <TouchableOpacity 
           style={styles.button}
-        //   onPress={() => chuyển sang màn hình xin nghỉ học
+          onPress={() => navigation.navigate('RequestAbsence', { classId: classInfo.class_id, className: classInfo.class_name })}
         >
           <Text style={styles.buttonText}>Xin nghỉ học</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.button}
-        //   onPress={() => chuyển sang màn hình bài tập
+          onPress={() => navigation.navigate('Assignments', {classId: classInfo.class_id})}
         >
           <Text style={styles.buttonText}>Bài tập</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.button}
-          onPress={() => navigation.navigate('StudentClassMaterial', { classId })}
-        >
-          <Text style={styles.buttonText}>Tài liệu lớp học</Text>
-        </TouchableOpacity>
       </View>
-    </View>
   );
 };
 
@@ -173,4 +157,7 @@ const styles = StyleSheet.create({
 });
 
 
+
 export default StudentClassInfo;
+ 
+  

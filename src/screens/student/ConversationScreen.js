@@ -176,7 +176,7 @@ const ConversationScreen = ({ route }) => {
     };
 
     const transformGoogleDriveLink = (link) => {
-        if (link.includes('drive.google.com')) {
+        if (link != null && link.includes('drive.google.com')) {
             const fileId = link.split('/d/')[1]?.split('/')[0];
             return `https://drive.google.com/uc?id=${fileId}`;
         }

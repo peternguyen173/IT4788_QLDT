@@ -18,7 +18,7 @@ const ChatScreen = () => {
             const response = await axios.post('http://157.66.24.126:8080/it5023e/get_list_conversation', {
                 token: userData.token,
                 index: '0',
-                count: '3',
+                count: '20',
             });
 
             if (response.data.meta.code === '1000') {

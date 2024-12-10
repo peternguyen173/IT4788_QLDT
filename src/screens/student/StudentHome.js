@@ -21,14 +21,12 @@ const StudentHome = () => {
       'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg';
 
 
+
   const menuItems = [
     { title: 'Danh sách lớp học', subtitle: 'Danh sách lớp học theo học kỳ', icon: 'book-outline', route: 'StudentClassList' },
     { title: 'Đăng ký lớp học', subtitle: 'Tham gia các lớp học mới', icon: 'person-add-outline', route: 'RegisterClass' },
-    { title: 'Bài tập', subtitle: 'Nộp và theo dõi bài tập', icon: 'clipboard-outline', route: 'Assignments' },
     { title: 'Tin nhắn', subtitle: 'Gửi và nhận tin nhắn', icon: 'chatbubbles-outline', route: 'ChatScreen' },
-    { title: 'Xin nghỉ học', subtitle: 'Gửi yêu cầu xin nghỉ học', icon: 'calendar-clear-outline', route: 'RequestLeave' },
     { title: 'Thông báo', subtitle: 'Cập nhật tin tức và thông báo', icon: 'notifications-outline', route: 'Notifications' },
-
   ];
   return (
     <View style={styles.container}>
@@ -37,7 +35,9 @@ const StudentHome = () => {
           <Image source={{ uri: avatar }} style={styles.avatar} />
           <View>
             <Text style={styles.name}>{userData?.ho + ' ' + userData?.ten || 'No name'}</Text>
-            <Text style={styles.info}>Mã giảng viên: {userData?.id || 'N/A'}</Text>
+            <Text style={styles.info}>Mã sinh viên: {userData?.id || 'N/A'}</Text>
+            <Text style={styles.info}>Email: {userData?.email || 'N/A'}</Text>
+
           </View>
         </View>
 
@@ -57,6 +57,16 @@ const StudentHome = () => {
           ))}
         </View>
       </ScrollView>
+      <View style={styles.footer}>
+        <Image
+            source={{
+              uri: 'https://upload.wikimedia.org/wikipedia/en/8/8e/%C4%90%E1%BA%A1i_h%E1%BB%8Dc_B%C3%A1ch_khoa_H%C3%A0_N%E1%BB%99i_%28logo%29.png', // Replace with your logo URL
+            }}
+            style={styles.logo}
+        />
+        <Text style={styles.footerText}>One Love, One Future</Text>
+      </View>
+
     </View>
   );
 };
@@ -73,10 +83,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   header: {
-    marginTop: -130,
+    marginTop: -190,
     flexDirection: 'row', // Hiển thị avatar và text ngang hàng
     alignItems: 'center', // Căn giữa theo chiều dọc
     justifyContent: 'center', // Căn giữa toàn bộ cụm avatar + tên theo chiều ngang
+    marginBottom: 30
   },
   avatar: {
     width: 70, // Kích thước avatar lớn hơn
@@ -131,6 +142,32 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
   },
+  logo: {
+    width: 100, // Adjust the width of the logo
+    height: 150, // Adjust the height of the logo
+    marginBottom: 10, // Space between the logo and slogan
+  },
+
+  footer: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderTopColor: '#ddd',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+
+  footerText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#d32f2f',
+    textAlign: 'center',
+  },
+
+
 });
 
 export default StudentHome;

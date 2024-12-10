@@ -23,9 +23,9 @@ const TeacherHome = () => {
   const menuItems = [
     { title: 'Danh sách lớp học', subtitle: 'Xem danh sách các lớp học theo học kỳ', icon: 'book-outline', route: 'TeacherClassList' },
     { title: 'Tạo lớp học', subtitle: 'Tạo lớp học mới theo học kỳ', icon: 'person-add-outline', route: 'CreateClass' },
-    { title: 'Bài tập', subtitle: 'Tạo bài tập, theo dõi và chấm điểm', icon: 'clipboard-outline', route: 'Assignments' },
+    //{ title: 'Bài tập', subtitle: 'Tạo bài tập, theo dõi và chấm điểm', icon: 'clipboard-outline', route: 'Assignments' },
     { title: 'Tin nhắn', subtitle: 'Gửi và nhận tin nhắn', icon: 'chatbubbles-outline', route: 'ChatScreen' },
-    { title: 'Xin nghỉ học', subtitle: 'Quản lý yêu cầu nghỉ học của sinh viên', icon: 'calendar-clear-outline', route: 'ManageLeaveRequests' },
+    //{ title: 'Xin nghỉ học', subtitle: 'Quản lý yêu cầu nghỉ học của sinh viên', icon: 'calendar-clear-outline', route: 'ManageLeaveRequests' },
     { title: 'Thông báo', subtitle: 'Cập nhật tin tức và thông báo', icon: 'notifications-outline', route: 'Notifications' },
   ];
 
@@ -37,6 +37,8 @@ const TeacherHome = () => {
             <View>
               <Text style={styles.name}>{userData?.ho + ' ' + userData?.ten || 'No name'}</Text>
               <Text style={styles.info}>Mã giảng viên: {userData?.id || 'N/A'}</Text>
+              <Text style={styles.info}>Email: {userData?.email || 'N/A'}</Text>
+
             </View>
           </View>
 
@@ -54,6 +56,16 @@ const TeacherHome = () => {
             ))}
           </View>
         </ScrollView>
+        <View style={styles.footer}>
+                <Image
+                    source={{
+                      uri: 'https://upload.wikimedia.org/wikipedia/en/8/8e/%C4%90%E1%BA%A1i_h%E1%BB%8Dc_B%C3%A1ch_khoa_H%C3%A0_N%E1%BB%99i_%28logo%29.png', // Replace with your logo URL
+                    }}
+                    style={styles.logo}
+                />
+                <Text style={styles.footerText}>One Love, One Future</Text>
+        </View>
+
       </View>
   );
 };
@@ -71,10 +83,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   header: {
-    marginTop: -130,
-    flexDirection: 'row', // Hiển thị avatar và text ngang hàng
-    alignItems: 'center', // Căn giữa theo chiều dọc
-    justifyContent: 'center', // Căn giữa toàn bộ cụm avatar + tên theo chiều ngang
+    marginTop: -190,
+       flexDirection: 'row', // Hiển thị avatar và text ngang hàng
+       alignItems: 'center', // Căn giữa theo chiều dọc
+       justifyContent: 'center', // Căn giữa toàn bộ cụm avatar + tên theo chiều ngang
+       marginBottom: 30
   },
   avatar: {
     width: 70, // Kích thước avatar lớn hơn
@@ -129,6 +142,31 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
   },
+  logo: {
+      width: 100, // Adjust the width of the logo
+      height: 150, // Adjust the height of the logo
+      marginBottom: 10, // Space between the logo and slogan
+    },
+
+    footer: {
+      backgroundColor: '#fff',
+      padding: 15,
+      borderTopColor: '#ddd',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+    },
+
+    footerText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#d32f2f',
+      textAlign: 'center',
+    },
+
 });
 
 

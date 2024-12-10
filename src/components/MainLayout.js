@@ -12,6 +12,10 @@ const MainLayout = ({ title, children, navigation, showBackButton = false }) => 
         navigation.navigate('ChatScreen');
     };
 
+    const handleNotificationPress = () => {
+        navigation.navigate('Notifications');
+    }
+
     const handleBack = () => {
         navigation.goBack(); // Quay lại màn hình trước đó
     };
@@ -29,6 +33,7 @@ const MainLayout = ({ title, children, navigation, showBackButton = false }) => 
                 }
                 onInboxPress={handleInboxPress}
                 unreadCount={unreadCount}
+                onNotificationPress={handleNotificationPress}
             />
         </SafeAreaView>
     );

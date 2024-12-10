@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useAuth } from '../navigators/AuthProvider';
 
-const Footer = ({ onHomePress, onProfilePress, onInboxPress, unreadCount }) => {
+const Footer = ({ onHomePress, onProfilePress, onInboxPress, unreadCount, onNotificationPress }) => {
+  const {unreadNotifications} = useAuth();
   return (
       <View style={styles.footer}>
         <TouchableOpacity onPress={onHomePress} style={styles.footerItem}>
@@ -26,6 +28,19 @@ const Footer = ({ onHomePress, onProfilePress, onInboxPress, unreadCount }) => {
           <Icon name="person" size={24} color="#000" />
           <Text style={styles.footerText}>Profile</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity  onPress={onNotificationPress} style={styles.footerItem}>
+          <View style={styles.iconWithBadge}>
+            <Icon name="notifications" size={24} color="#000" />
+            {unreadNotifications > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{unreadNotifications}</Text>
+                </View>
+            )}
+          </View>
+          <Text style={styles.footerText}>Thông báo</Text>
+        </TouchableOpacity>
+
       </View>
   );
 };
